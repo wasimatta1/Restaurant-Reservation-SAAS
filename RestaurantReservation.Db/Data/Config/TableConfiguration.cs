@@ -13,6 +13,11 @@ namespace RestaurantReservation.Db.Data.Config
 
             builder.Property(c => c.Capacity);
 
+            builder.HasOne(c => c.Restaurant)
+                .WithMany(c => c.Tables)
+                .HasForeignKey(c => c.RestaurantId)
+                .IsRequired();
+
             builder.ToTable("Table");
         }
     }

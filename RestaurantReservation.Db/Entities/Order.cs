@@ -8,6 +8,10 @@
         public DateTime OrderDate { get; set; }
         public decimal TotalAmount { get; set; }
 
+        public Employee Employee { get; set; }
+        public Reservation Reservation { get; set; }
+        public ICollection<MenuItem> MenuItems { get; set; } = new List<MenuItem>();
+
     }
 
 

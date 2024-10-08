@@ -17,6 +17,11 @@ namespace RestaurantReservation.Db.Data.Config
 
             builder.Property(c => c.Price).HasPrecision(15, 2);
 
+            builder.HasOne(c => c.Restaurant)
+                .WithMany(c => c.MenuItems)
+                .HasForeignKey(c => c.RestaurantId)
+                .IsRequired();
+
             builder.ToTable("MenuItem");
         }
 

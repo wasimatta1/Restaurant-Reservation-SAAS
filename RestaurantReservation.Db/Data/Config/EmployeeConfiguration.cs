@@ -17,6 +17,10 @@ namespace RestaurantReservation.Db.Data.Config
 
             builder.Property(c => c.Position).IsRequired().HasColumnType("VARCHAR").HasMaxLength(255);
 
+            builder.HasOne(c => c.Restaurant)
+                .WithMany(c => c.Employees)
+                .HasForeignKey(c => c.RestaurantId)
+                .IsRequired();
 
             builder.ToTable("Employee");
         }

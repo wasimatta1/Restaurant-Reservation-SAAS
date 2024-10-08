@@ -15,6 +15,22 @@ namespace RestaurantReservation.Db.Data.Config
 
             builder.Property(c => c.PartySize);
 
+            builder.HasOne(c => c.Customer)
+                .WithMany(c => c.Reservations)
+                .HasForeignKey(c => c.CustomerId)
+                .IsRequired();
+
+            builder.HasOne(c => c.Table)
+                .WithMany(c => c.Reservations)
+                .HasForeignKey(c => c.TableId)
+                .IsRequired();
+
+            builder.HasOne(c => c.Restaurant)
+                .WithMany(c => c.Reservations)
+                .HasForeignKey(c => c.RestaurantId)
+                .IsRequired();
+
+
             builder.ToTable("Reservation");
         }
     }

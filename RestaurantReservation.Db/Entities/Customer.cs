@@ -7,6 +7,8 @@
         public string? Last_Name { get; set; }
         public string? Email { get; set; }
         public string? Phone_Number { get; set; }
+
+        public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
     }
 
 
