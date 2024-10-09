@@ -18,6 +18,7 @@ namespace RestaurantReservation.Db.Data.Config
             builder.HasOne(c => c.Reservation)
                 .WithMany(c => c.Orders)
                 .HasForeignKey(c => c.ReservationId)
+                .OnDelete(DeleteBehavior.Restrict)
                 .IsRequired();
 
             builder.HasOne(c => c.Employee)
@@ -29,7 +30,22 @@ namespace RestaurantReservation.Db.Data.Config
                 .WithMany(c => c.Orders)
                 .UsingEntity<OrderItem>();
 
-            builder.ToTable("Order");
+
+            builder.ToTable("Orders");
+
+            builder.HasData(LoadOrders());
         }
+        public List<Order> LoadOrders()
+        {
+            return new List<Order>
+            {
+                new Order { OrderId = 1, ReservationId = 1, EmployeeId = 1, OrderDate = DateTime.Now, TotalAmount = 45.50M },
+                new Order { OrderId = 2, ReservationId = 2, EmployeeId = 2, OrderDate = DateTime.Now, TotalAmount = 25.00M },
+                new Order { OrderId = 3, ReservationId = 3, EmployeeId = 3, OrderDate = DateTime.Now, TotalAmount = 75.99M },
+                new Order { OrderId = 4, ReservationId = 4, EmployeeId = 4, OrderDate = DateTime.Now, TotalAmount = 50.75M },
+                new Order { OrderId = 5, ReservationId = 5, EmployeeId = 5, OrderDate = DateTime.Now, TotalAmount = 60.00M }
+            };
+        }
+
     }
 }

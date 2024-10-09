@@ -11,6 +11,7 @@
         public Employee Employee { get; set; }
         public Reservation Reservation { get; set; }
         public ICollection<MenuItem> MenuItems { get; set; } = new List<MenuItem>();
+        public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
     }
 

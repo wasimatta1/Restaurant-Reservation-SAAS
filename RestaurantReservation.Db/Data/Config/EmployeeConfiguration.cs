@@ -22,7 +22,20 @@ namespace RestaurantReservation.Db.Data.Config
                 .HasForeignKey(c => c.RestaurantId)
                 .IsRequired();
 
-            builder.ToTable("Employee");
+            builder.ToTable("Employees");
+
+            builder.HasData(LoadEmployees());
+        }
+        public List<Employee> LoadEmployees()
+        {
+            return new List<Employee>
+            {
+                new Employee { EmployeeId = 1, RestaurantId = 1, FirstName = "Miguel", LastName = "Lopez", Position = "Manager" },
+                new Employee { EmployeeId = 2, RestaurantId = 2, FirstName = "Samantha", LastName = "Green", Position = "Chef" },
+                new Employee { EmployeeId = 3, RestaurantId = 3, FirstName = "David", LastName = "Wong", Position = "Waiter" },
+                new Employee { EmployeeId = 4, RestaurantId = 4, FirstName = "Laura", LastName = "Kim", Position = "Host" },
+                new Employee { EmployeeId = 5, RestaurantId = 5, FirstName = "Roberto", LastName = "Santini", Position = "Bartender" }
+            };
         }
 
     }
