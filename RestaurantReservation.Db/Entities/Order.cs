@@ -15,7 +15,17 @@
 
         override public string ToString()
         {
-            return $"Order: {OrderId}, Date: {OrderDate}, Total: {TotalAmount}\n";
+            var result = $"Order: {OrderId}, Date: {OrderDate}, Total: {TotalAmount}\n";
+            if (MenuItems != null)
+            {
+                foreach (var item in MenuItems)
+                {
+                    var quantity = OrderItems.FirstOrDefault(oi => oi.ItemId == item.ItemId)?.Quantity;
+                    result += $"\t --Quantity: {quantity}, {item.ToString()}";
+
+                }
+            }
+            return result;
         }
     }
 

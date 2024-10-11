@@ -12,7 +12,7 @@
 
         override public string ToString()
         {
-            return $"OrderItem: {OrderItemId}, Quantity: {Quantity}\n";
+            return $"Quantity: {Quantity}\n";
         }
 
     }

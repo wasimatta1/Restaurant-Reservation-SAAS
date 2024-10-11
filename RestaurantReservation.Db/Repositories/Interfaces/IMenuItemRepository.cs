@@ -5,6 +5,5 @@ namespace RestaurantReservation.Db.Repositories.Interfaces
 {
     public interface IMenuItemRepository : IRepository<MenuItem>
     {
-
     }
 }

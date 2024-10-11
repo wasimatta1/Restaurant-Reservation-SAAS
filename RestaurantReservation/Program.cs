@@ -1,14 +1,16 @@
 ﻿using RestaurantReservation.Db.Data;
 using RestaurantReservation.Db.Entities;
+using RestaurantReservation.Db.Repositories.Implementations;
+using RestaurantReservation.Extenstions;
 using System.Collections;
 
 namespace RestaurantReservation
 {
     public class Program
     {
+        private readonly static RestaurantReservationDbContext context = new RestaurantReservationDbContext();
         public static async Task Main(string[] args)
         {
-
             while (true)
             {
                 Console.WriteLine("Select an action:");
@@ -17,11 +19,16 @@ namespace RestaurantReservation
                 Console.WriteLine("3. Delete");
                 Console.WriteLine("4. Get By ID");
                 Console.WriteLine("5. Get All");
+                Console.WriteLine("6. List All Manger");
+                Console.WriteLine("7. Get Reservations By Customer");
+                Console.WriteLine("8. List Orders And MenuItems By ReservationId");
+                Console.WriteLine("9. List Ordered MenuItems By ReservationId");
+                Console.WriteLine("10. Calculate Average Order Amount By EmployeeId");
                 Console.WriteLine("0. Exit");
                 var choice = Console.ReadLine();
                 Console.WriteLine();
 
-                if (string.IsNullOrEmpty(choice) || !"012345".Contains(choice))
+                if (string.IsNullOrEmpty(choice) || !"012345678910".Contains(choice))
                 {
                     Console.WriteLine("Invalid input. Please try again.");
                     continue;
@@ -32,6 +39,28 @@ namespace RestaurantReservation
                     break;
                 }
 
+                if ("6789".Contains(choice) || choice.Equals("10"))
+                {
+                    switch (choice)
+                    {
+                        case "6":
+                            ListAllManagers();
+                            break;
+                        case "7":
+                            GetReservationsByCustomer();
+                            break;
+                        case "8":
+                            ListOrdersAndMenuItemsByReservationId();
+                            break;
+                        case "9":
+                            ListOrderedMenuItemsByReservationId();
+                            break;
+                        case "10":
+                            CalculateAvgOrderAmountByEmployeeId();
+                            break;
+                    }
+                    continue;
+                }
                 Console.WriteLine("Select an entity:");
                 Console.WriteLine("1. Customer");
                 Console.WriteLine("2. Employee");
@@ -183,6 +212,45 @@ namespace RestaurantReservation
             } while (!int.TryParse(Console.ReadLine(), out id));
 
             return id;
+        }
+        public static void ListAllManagers()
+        {
+            var repository = new EmployeeRepository(context);
+            var Mangers = repository.ListManagers();
+            Mangers?.Print("All Managers");
+        }
+
+        public static void GetReservationsByCustomer()
+        {
+            var repository = new CustomerRepository(context);
+            var id = ReadID();
+            var reservations = repository.GetReservationsByCustomer(id);
+            reservations?.Print("Reservations By Customer");
+        }
+
+        public static void ListOrdersAndMenuItemsByReservationId()
+        {
+            var repository = new OrderRepository(context);
+            var id = ReadID();
+            var ordersAndMenuItems = repository.ListOrdersAndMenuItems(id);
+            ordersAndMenuItems?.Print("Orders And MenuItems");
+
+        }
+
+        public static void ListOrderedMenuItemsByReservationId()
+        {
+            var repository = new OrderRepository(context);
+            var id = ReadID();
+            var orderedMenuItems = repository.ListOrderedMenuItems(id);
+            orderedMenuItems?.Print("Ordered MenuItems");
+        }
+
+        public static void CalculateAvgOrderAmountByEmployeeId()
+        {
+            var repository = new OrderRepository(context);
+            var id = ReadID();
+            var avgOrderAmount = repository.CalculateAverageOrderAmount(id);
+            Console.WriteLine($"Average Order Amount: {avgOrderAmount.Result}");
         }
 
     }
