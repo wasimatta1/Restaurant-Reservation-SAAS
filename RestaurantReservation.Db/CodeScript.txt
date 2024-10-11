@@ -1,0 +1,35 @@
+CREATE VIEW ReservationsView AS
+SELECT 
+    r.ReservationId,
+    r.ReservationDate,
+    r.PartySize,
+    c.Id,
+    c.First_Name,
+	c.Phone_Number,
+    res.RestaurantId,
+    res.Name,
+	res.Address
+FROM Reservations r
+JOIN Customers c ON r.CustomerId = c.Id
+JOIN Restaurants res ON r.RestaurantId = res.RestaurantId;
+
+
+CREATE VIEW EmployeeRestaurantView AS
+SELECT 
+    e.EmployeeId,
+    e.FirstName,
+    e.LastName,
+    e.Position,
+    e.RestaurantId,
+    r.Name AS RestaurantName,
+    r.Address AS RestaurantAddress,
+    r.PhoneNumber AS RestaurantPhoneNumber,
+    r.OpeningHours AS RestaurantOpeningHours
+FROM 
+    Employees e
+INNER JOIN 
+    Restaurants r ON e.RestaurantId = r.RestaurantId;
+
+
+
+

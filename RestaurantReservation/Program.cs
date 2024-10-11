@@ -1,5 +1,7 @@
-﻿using RestaurantReservation.Db.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using RestaurantReservation.Db.Data;
 using RestaurantReservation.Db.Entities;
+using RestaurantReservation.Db.Entities.Views;
 using RestaurantReservation.Db.Repositories.Implementations;
 using RestaurantReservation.Extenstions;
 using System.Collections;
@@ -24,11 +26,14 @@ namespace RestaurantReservation
                 Console.WriteLine("8. List Orders And MenuItems By ReservationId");
                 Console.WriteLine("9. List Ordered MenuItems By ReservationId");
                 Console.WriteLine("10. Calculate Average Order Amount By EmployeeId");
+                Console.WriteLine("11. Get All Reservations With Details");
+                Console.WriteLine("12. Get Employees With Restaurant Details");
+
                 Console.WriteLine("0. Exit");
                 var choice = Console.ReadLine();
                 Console.WriteLine();
 
-                if (string.IsNullOrEmpty(choice) || !"012345678910".Contains(choice))
+                if (string.IsNullOrEmpty(choice) || !(int.Parse(choice) >= 0 && int.Parse(choice) <= 12))
                 {
                     Console.WriteLine("Invalid input. Please try again.");
                     continue;
@@ -39,7 +44,7 @@ namespace RestaurantReservation
                     break;
                 }
 
-                if ("6789".Contains(choice) || choice.Equals("10"))
+                if (int.Parse(choice) >= 6 && int.Parse(choice) <= 12)
                 {
                     switch (choice)
                     {
@@ -57,6 +62,14 @@ namespace RestaurantReservation
                             break;
                         case "10":
                             CalculateAvgOrderAmountByEmployeeId();
+                            break;
+                        case "11":
+                            var reservations = await GetAllReservationsWithDetailsAsync();
+                            await reservations.Print("All Reservations With Details");
+                            break;
+                        case "12":
+                            var employees = await GetEmployeesWithRestaurantDetailsAsync();
+                            await employees.Print("Employees With Restaurant Details");
                             break;
                     }
                     continue;
@@ -252,6 +265,15 @@ namespace RestaurantReservation
             var avgOrderAmount = repository.CalculateAverageOrderAmount(id);
             Console.WriteLine($"Average Order Amount: {avgOrderAmount.Result}");
         }
+        public static async Task<IEnumerable<ReservationView>> GetAllReservationsWithDetailsAsync()
+        {
+            return await context.ReservationsView.ToListAsync();
+        }
+        public static async Task<List<EmployeeRestaurantView>> GetEmployeesWithRestaurantDetailsAsync()
+        {
+            return await context.EmployeeRestaurantView.ToListAsync();
+        }
+
 
     }
 }

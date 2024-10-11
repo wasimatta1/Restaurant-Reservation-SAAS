@@ -3,16 +3,16 @@
     public class Customer
     {
         public int Id { get; set; }
-        public string? First_Name { get; set; }
-        public string? Last_Name { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
         public string? Email { get; set; }
-        public string? Phone_Number { get; set; }
+        public string? PhoneNumber { get; set; }
 
         public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
 
         public override string ToString()
         {
-            return $"Customer: {First_Name} {Last_Name}, Email: {Email}, Phone Number: {Phone_Number}\n";
+            return $"Customer: {FirstName} {LastName}, Email: {Email}, Phone Number: {PhoneNumber}\n";
         }
     }
 

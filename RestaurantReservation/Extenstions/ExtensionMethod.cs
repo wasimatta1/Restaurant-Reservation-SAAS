@@ -18,5 +18,20 @@ namespace RestaurantReservation.Extenstions
 
             }
         }
+        public static async Task Print<T>(this IEnumerable<T> source, string title)
+        {
+            if (source == null)
+                return;
+            Console.WriteLine();
+            Console.WriteLine("┌────────────────────────────────────┐");
+            Console.WriteLine($"│   {title.PadRight(52, ' ')}│");
+            Console.WriteLine("└────────────────────────────────────┘");
+            Console.WriteLine();
+            foreach (var item in source)
+            {
+                Console.WriteLine(item);
+
+            }
+        }
     }
 }
