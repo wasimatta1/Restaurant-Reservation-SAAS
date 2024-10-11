@@ -13,6 +13,10 @@
         public ICollection<MenuItem> MenuItems { get; set; } = new List<MenuItem>();
         public ICollection<Table> Tables { get; set; } = new List<Table>();
 
+        override public string ToString()
+        {
+            return $"Restaurant: {Name}, Address: {Address}, Phone Number: {PhoneNumber}\n";
+        }
     }
 
 

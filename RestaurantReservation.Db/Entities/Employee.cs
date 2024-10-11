@@ -11,6 +11,10 @@
         public Restaurant Restaurant { get; set; }
         public ICollection<Order> Orders { get; set; } = new List<Order>();
 
+        override public string ToString()
+        {
+            return $"Employee: {FirstName} {LastName}, Position: {Position}\n";
+        }
 
     }
 

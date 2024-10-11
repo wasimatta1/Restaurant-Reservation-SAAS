@@ -13,6 +13,10 @@
         public ICollection<MenuItem> MenuItems { get; set; } = new List<MenuItem>();
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
+        override public string ToString()
+        {
+            return $"Order: {OrderId}, Date: {OrderDate}, Total: {TotalAmount}\n";
+        }
     }
 
 

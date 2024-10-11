@@ -9,8 +9,9 @@
         public Restaurant Restaurant { get; set; }
         public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
 
-
+        override public string ToString()
+        {
+            return $"Table: {TableId}, Capacity: {Capacity}\n";
+        }
     }
-
-
 }

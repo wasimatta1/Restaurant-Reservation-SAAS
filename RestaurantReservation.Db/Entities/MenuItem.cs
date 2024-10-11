@@ -12,7 +12,10 @@
         public ICollection<Order> Orders { get; set; } = new List<Order>();
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
-
+        override public string ToString()
+        {
+            return $"MenuItem: {Name}, Price: {Price}\n";
+        }
     }
 
 
