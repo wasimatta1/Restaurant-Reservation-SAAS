@@ -31,5 +31,15 @@ INNER JOIN
     Restaurants r ON e.RestaurantId = r.RestaurantId;
 
 
+create function dbo.fn_CalculateTheTotalRevenueGeneratedByASpecificRestaurant(@RestaurantID INT)
+    RETURNS DECIMAL(18,2)
+As BEGIN
+	 DECLARE @Revenue DECIMAL(18,2)
+    (SELECT @Revenue = SUM(o.TotalAmount) FROM Orders o Join Employees e on o.EmployeeId = e.EmployeeId
+                                join Restaurants r on e.RestaurantId = r.RestaurantId
+                                WHERE r.RestaurantID = @RestaurantID);
+	RETURN ISNULL(@Revenue, 0)
+end;
+
 
 
