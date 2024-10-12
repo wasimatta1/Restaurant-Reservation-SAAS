@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using RestaurantReservation.Db.Entities;
+using RestaurantReservation.Db.Entities.Procedures_Models;
 using RestaurantReservation.Db.Entities.Views;
 
 namespace RestaurantReservation.Db.Data
@@ -17,6 +18,8 @@ namespace RestaurantReservation.Db.Data
         public DbSet<Table> Tables { get; set; }
         public DbSet<ReservationView> ReservationsView { get; set; }
         public DbSet<EmployeeRestaurantView> EmployeeRestaurantView { get; set; }
+        public DbSet<CustomerReservation> CustomerReservations { get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

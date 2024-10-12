@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using RestaurantReservation.Db.Entities.Procedures_Models;
 using RestaurantReservation.Db.Entities.Views;
 
 namespace RestaurantReservation.Db.Data.Config
@@ -21,5 +22,14 @@ namespace RestaurantReservation.Db.Data.Config
             builder.Property(x => x.ReservationDate).HasColumnName("ReservationDate");
             builder.Property(x => x.PartySize).HasColumnName("PartySize");
         }
+    }
+}
+public class CustomerReservationProcedureConfiguration : IEntityTypeConfiguration<CustomerReservation>
+{
+
+    public void Configure(EntityTypeBuilder<CustomerReservation> builder)
+    {
+        builder.HasNoKey();
+
     }
 }

@@ -15,6 +15,4 @@
             return $"Customer: {FirstName} {LastName}, Email: {Email}, Phone Number: {PhoneNumber}\n";
         }
     }
-
-
 }

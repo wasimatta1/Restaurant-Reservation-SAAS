@@ -41,5 +41,20 @@ As BEGIN
 	RETURN ISNULL(@Revenue, 0)
 end;
 
-
+Drop Procedure if exists sp_FindCustomersWithLargePartySize;
+GO
+CREATE PROCEDURE sp_FindCustomersWithLargePartySize(@PartySize INT)
+AS
+BEGIN
+SELECT 
+    c.Id AS CustomerID, 
+    CONCAT(c.First_Name, ' ', c.Last_Name) AS CustomerName, 
+    r.PartySize
+FROM 
+    Customers c
+JOIN 
+    Reservations r ON c.Id = r.CustomerId
+WHERE 
+    r.PartySize > @PartySize;
+END;
 
