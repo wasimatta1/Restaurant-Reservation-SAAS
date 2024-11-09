@@ -28,10 +28,14 @@ namespace RestaurantReservation.Db.Repositories.Implementations
             _context.Employees.Remove(employee);
         }
 
-        public async Task<Employee?> GetEmployeeByIdAsync(int restaurantId, int id)
+        public async Task<Employee?> GetEmployeeAsync(int restaurantId, int id)
         {
             return await _context.Employees
                 .Where(c => c.RestaurantId == restaurantId && c.EmployeeId == id).FirstOrDefaultAsync();
+        }
+        public async Task<Employee?> GetEmployeeAsync(int id)
+        {
+            return await _context.Employees.Where(c => c.EmployeeId == id).FirstOrDefaultAsync();
         }
         public async Task<(IEnumerable<Employee>, PaginationMetadata)> GetEmployeesAsync(
            int restaurantId, string? name, string? searchQuery, int pagNumber, int pageSize)

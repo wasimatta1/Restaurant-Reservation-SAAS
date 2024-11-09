@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantReservation.API.DTO_s.EmployeeDto;
 using RestaurantReservation.Db.Entities;
@@ -8,6 +9,7 @@ using System.Text.Json;
 namespace RestaurantReservation.API.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/restaurants/{restaurantId}/[controller]")]
     public class EmployeesController : Controller
     {
@@ -51,7 +53,7 @@ namespace RestaurantReservation.API.Controllers
                 return BadRequest("Restaurant Not Found");
             }
 
-            var employeeEntity = await _employeeRepository.GetEmployeeByIdAsync(restaurantId, id);
+            var employeeEntity = await _employeeRepository.GetEmployeeAsync(restaurantId, id);
 
             if (employeeEntity is null)
             {
@@ -90,7 +92,7 @@ namespace RestaurantReservation.API.Controllers
         [HttpPut]
         public async Task<ActionResult> UpdateEmployee(int restaurantId, EmployeeUpdateDto employee)
         {
-            var employeeEntity = await _employeeRepository.GetEmployeeByIdAsync(restaurantId, employee.EmployeeId);
+            var employeeEntity = await _employeeRepository.GetEmployeeAsync(restaurantId, employee.EmployeeId);
 
             if (employeeEntity is null)
             {
@@ -120,7 +122,7 @@ namespace RestaurantReservation.API.Controllers
             {
                 return BadRequest("Restaurant Not Found");
             }
-            var employeeEntity = await _employeeRepository.GetEmployeeByIdAsync(restaurantId, id);
+            var employeeEntity = await _employeeRepository.GetEmployeeAsync(restaurantId, id);
 
             if (employeeEntity is null)
             {

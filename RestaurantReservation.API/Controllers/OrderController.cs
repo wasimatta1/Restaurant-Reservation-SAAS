@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantReservation.API.DTO_s.OrderDto;
 using RestaurantReservation.Db.Entities;
@@ -8,6 +9,7 @@ using System.Text.Json;
 namespace RestaurantReservation.API.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/restaurants/{restaurantId}/[controller]")]
     public class OrderController : Controller
     {
@@ -67,7 +69,7 @@ namespace RestaurantReservation.API.Controllers
             {
                 return BadRequest("Reservation Not Found");
             }
-            if (await _employeeRepository.GetEmployeeByIdAsync(restaurantId, order.EmployeeId) is null)
+            if (await _employeeRepository.GetEmployeeAsync(restaurantId, order.EmployeeId) is null)
             {
                 return BadRequest("Employee Not Found");
             }
@@ -124,7 +126,7 @@ namespace RestaurantReservation.API.Controllers
             {
                 return BadRequest("Reservation Not Found");
             }
-            if (await _employeeRepository.GetEmployeeByIdAsync(restaurantId, order.EmployeeId) is null)
+            if (await _employeeRepository.GetEmployeeAsync(restaurantId, order.EmployeeId) is null)
             {
                 return BadRequest("Employee Not Found");
             }
