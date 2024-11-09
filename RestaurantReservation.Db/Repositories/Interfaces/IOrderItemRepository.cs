@@ -1,10 +1,12 @@
 ﻿using RestaurantReservation.Db.Entities;
-using RestaurantReservation.Db.Repositories.Interfaces.BaseInterface;
 
 namespace RestaurantReservation.Db.Repositories.Interfaces
 {
-    public interface IOrderItemRepository : IRepository<OrderItem>
+    public interface IOrderItemRepository
     {
+        public Task AddOrderItem(OrderItem orderItem);
+
+        public Task<bool> OrderItemExistsAsync(int id);
 
     }
 }

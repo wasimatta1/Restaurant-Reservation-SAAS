@@ -18,6 +18,7 @@ namespace RestaurantReservation.Db.Repositories.Implementations.BaseImplementati
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {
+
             return await _dbSet.ToListAsync();
         }
 
