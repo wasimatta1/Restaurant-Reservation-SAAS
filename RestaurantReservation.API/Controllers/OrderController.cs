@@ -10,7 +10,7 @@ namespace RestaurantReservation.API.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route("api/restaurants/{restaurantId}/[controller]")]
+    [Route("api/[controller]")]
     public class OrderController : Controller
     {
         private readonly IOrderRepository _orderRepository;
@@ -30,13 +30,19 @@ namespace RestaurantReservation.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<OrderInfoDto>>> GetAllAsync(int restaurantId,
+        public async Task<ActionResult<IEnumerable<OrderInfoDto>>> GetAllAsync(
                 string? searchQuery, int? employeeId, int? reservatiooId,
                  int pagNumber = 1, int pageSize = 10)
         {
             if (pageSize > maxPageSize)
             {
                 pageSize = 10;
+            }
+            var restaurantIdClaim = User.FindFirst("RestaurantId");
+
+            if (restaurantIdClaim == null || !int.TryParse(restaurantIdClaim.Value, out int restaurantId))
+            {
+                return Unauthorized("Restaurant ID not found in token.");
             }
 
             var (orderEntities, paginationMetadata) = await _orderRepository
@@ -48,8 +54,14 @@ namespace RestaurantReservation.API.Controllers
         }
 
         [HttpGet("{id}", Name = "GetOrder")]
-        public async Task<ActionResult<OrderInfoDto>> GetOrderAsync(int restaurantId, int id)
+        public async Task<ActionResult<OrderInfoDto>> GetOrderAsync(int id)
         {
+            var restaurantIdClaim = User.FindFirst("RestaurantId");
+
+            if (restaurantIdClaim == null || !int.TryParse(restaurantIdClaim.Value, out int restaurantId))
+            {
+                return Unauthorized("Restaurant ID not found in token.");
+            }
             var orderEntity = await _orderRepository.GetOrderAsync(restaurantId, id);
 
             if (orderEntity is null)
@@ -60,10 +72,16 @@ namespace RestaurantReservation.API.Controllers
             return Ok(_mapper.Map<OrderInfoDto>(orderEntity));
         }
         [HttpPost]
-        public async Task<ActionResult<OrderInfoDto>> CreateOrder(int restaurantId, OrderCreateDto order)
+        public async Task<ActionResult<OrderInfoDto>> CreateOrder(OrderCreateDto order)
         {
             var orderEntity = _mapper.Map<Order>(order);
 
+            var restaurantIdClaim = User.FindFirst("RestaurantId");
+
+            if (restaurantIdClaim == null || !int.TryParse(restaurantIdClaim.Value, out int restaurantId))
+            {
+                return Unauthorized("Restaurant ID not found in token.");
+            }
 
             if (await _reservationRepository.GetReservationAsync(order.ReservationId) is null)
             {
@@ -95,9 +113,15 @@ namespace RestaurantReservation.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteOrder(int restaurantid, int id)
+        public async Task<ActionResult> DeleteOrder(int id)
         {
-            var orderEntity = await _orderRepository.GetOrderAsync(restaurantid, id);
+            var restaurantIdClaim = User.FindFirst("RestaurantId");
+
+            if (restaurantIdClaim == null || !int.TryParse(restaurantIdClaim.Value, out int restaurantId))
+            {
+                return Unauthorized("Restaurant ID not found in token.");
+            }
+            var orderEntity = await _orderRepository.GetOrderAsync(restaurantId, id);
 
             if (orderEntity is null)
             {
@@ -113,8 +137,14 @@ namespace RestaurantReservation.API.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateOrder(int restaurantId, OrderUpdateDto order)
+        public async Task<ActionResult> UpdateOrder(OrderUpdateDto order)
         {
+            var restaurantIdClaim = User.FindFirst("RestaurantId");
+
+            if (restaurantIdClaim == null || !int.TryParse(restaurantIdClaim.Value, out int restaurantId))
+            {
+                return Unauthorized("Restaurant ID not found in token.");
+            }
             var orderEntity = await _orderRepository.GetOrderAsync(restaurantId, order.OrderId);
 
             if (orderEntity is null)

@@ -10,7 +10,7 @@ namespace RestaurantReservation.API.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route("api/restaurants/{restaurantId}/[controller]")]
+    [Route("api/[controller]")]
     public class EmployeesController : Controller
     {
         private readonly IEmployeeRepository _employeeRepository;
@@ -25,12 +25,14 @@ namespace RestaurantReservation.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<EmployeeInfoDto>>> GetAllAsync(int restaurantId, string? name, string? searchQuery,
+        public async Task<ActionResult<IEnumerable<EmployeeInfoDto>>> GetAllAsync(string? name, string? searchQuery,
             int pagNumber = 1, int pageSize = 10)
         {
-            if (!await _restaurantRepository.RestaurantExistsAsync(restaurantId))
+            var restaurantIdClaim = User.FindFirst("RestaurantId");
+
+            if (restaurantIdClaim == null || !int.TryParse(restaurantIdClaim.Value, out int restaurantId))
             {
-                return BadRequest("Restaurant Not Found");
+                return Unauthorized("Restaurant ID not found in token.");
             }
 
             if (pageSize > maxCitiesPageSize)
@@ -46,11 +48,13 @@ namespace RestaurantReservation.API.Controllers
             return Ok(_mapper.Map<IEnumerable<EmployeeInfoDto>>(employeeEntities));
         }
         [HttpGet("{id}", Name = "GetEmployee")]
-        public async Task<ActionResult<EmployeeInfoDto>> GetEmployeeByIdAsync(int restaurantId, int id)
+        public async Task<ActionResult<EmployeeInfoDto>> GetEmployeeByIdAsync(int id)
         {
-            if (!await _restaurantRepository.RestaurantExistsAsync(restaurantId))
+            var restaurantIdClaim = User.FindFirst("RestaurantId");
+
+            if (restaurantIdClaim == null || !int.TryParse(restaurantIdClaim.Value, out int restaurantId))
             {
-                return BadRequest("Restaurant Not Found");
+                return Unauthorized("Restaurant ID not found in token.");
             }
 
             var employeeEntity = await _employeeRepository.GetEmployeeAsync(restaurantId, id);
@@ -63,12 +67,13 @@ namespace RestaurantReservation.API.Controllers
             return Ok(_mapper.Map<EmployeeInfoDto>(employeeEntity));
         }
         [HttpPost]
-        public async Task<ActionResult<EmployeeInfoDto>> CreateEmployee(int restaurantId, EmployeeCreateDto employee)
+        public async Task<ActionResult<EmployeeInfoDto>> CreateEmployee(EmployeeCreateDto employee)
         {
+            var restaurantIdClaim = User.FindFirst("RestaurantId");
 
-            if (!await _restaurantRepository.RestaurantExistsAsync(restaurantId))
+            if (restaurantIdClaim == null || !int.TryParse(restaurantIdClaim.Value, out int restaurantId))
             {
-                return BadRequest("Restaurant Not Found");
+                return Unauthorized("Restaurant ID not found in token.");
             }
 
 
@@ -90,8 +95,15 @@ namespace RestaurantReservation.API.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateEmployee(int restaurantId, EmployeeUpdateDto employee)
+        public async Task<ActionResult> UpdateEmployee(EmployeeUpdateDto employee)
         {
+            var restaurantIdClaim = User.FindFirst("RestaurantId");
+
+            if (restaurantIdClaim == null || !int.TryParse(restaurantIdClaim.Value, out int restaurantId))
+            {
+                return Unauthorized("Restaurant ID not found in token.");
+            }
+
             var employeeEntity = await _employeeRepository.GetEmployeeAsync(restaurantId, employee.EmployeeId);
 
             if (employeeEntity is null)
@@ -99,14 +111,6 @@ namespace RestaurantReservation.API.Controllers
                 return NotFound();
             }
 
-            if (!await _restaurantRepository.RestaurantExistsAsync(restaurantId))
-            {
-                return BadRequest("Restaurant Not Found");
-            }
-            if (!await _restaurantRepository.RestaurantExistsAsync(employeeEntity.RestaurantId))
-            {
-                return BadRequest("Restaurant Not Found");
-            }
 
             _mapper.Map(employee, employeeEntity);
 
@@ -115,13 +119,15 @@ namespace RestaurantReservation.API.Controllers
             return NoContent();
         }
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteEmployee(int restaurantId, int id)
+        public async Task<ActionResult> DeleteEmployee(int id)
         {
+            var restaurantIdClaim = User.FindFirst("RestaurantId");
 
-            if (!await _restaurantRepository.RestaurantExistsAsync(restaurantId))
+            if (restaurantIdClaim == null || !int.TryParse(restaurantIdClaim.Value, out int restaurantId))
             {
-                return BadRequest("Restaurant Not Found");
+                return Unauthorized("Restaurant ID not found in token.");
             }
+
             var employeeEntity = await _employeeRepository.GetEmployeeAsync(restaurantId, id);
 
             if (employeeEntity is null)

@@ -10,7 +10,7 @@ namespace RestaurantReservation.API.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route("api/restaurants/{restaurantId}/[controller]")]
+    [Route("api/[controller]")]
     public class MenuItemController : Controller
     {
         private readonly IMenuItemRepository _menuItemRepository;
@@ -27,11 +27,13 @@ namespace RestaurantReservation.API.Controllers
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MenuItemInfoDto>>> GetAllAsync(
-        int restaurantId, string? name, string? searchQuery, int pagNumber = 1, int pageSize = 10)
+        string? name, string? searchQuery, int pagNumber = 1, int pageSize = 10)
         {
-            if (!await _restaurantRepository.RestaurantExistsAsync(restaurantId))
+            var restaurantIdClaim = User.FindFirst("RestaurantId");
+
+            if (restaurantIdClaim == null || !int.TryParse(restaurantIdClaim.Value, out int restaurantId))
             {
-                return BadRequest("Restaurant Not Found");
+                return Unauthorized("Restaurant ID not found in token.");
             }
 
             if (pageSize > maxCitiesPageSize)
@@ -47,11 +49,13 @@ namespace RestaurantReservation.API.Controllers
             return Ok(_mapper.Map<IEnumerable<MenuItemInfoDto>>(MenuItemEntities));
         }
         [HttpGet("{id}", Name = "GetMenuItem")]
-        public async Task<ActionResult<MenuItemInfoDto>> GetMenuItemAsync(int restaurantId, int id)
+        public async Task<ActionResult<MenuItemInfoDto>> GetMenuItemAsync(int id)
         {
-            if (!await _restaurantRepository.RestaurantExistsAsync(restaurantId))
+            var restaurantIdClaim = User.FindFirst("RestaurantId");
+
+            if (restaurantIdClaim == null || !int.TryParse(restaurantIdClaim.Value, out int restaurantId))
             {
-                return BadRequest("Restaurant Not Found");
+                return Unauthorized("Restaurant ID not found in token.");
             }
 
             var menuItemEntity = await _menuItemRepository.GetMenuItemAsync(restaurantId, id);
@@ -67,12 +71,14 @@ namespace RestaurantReservation.API.Controllers
 
         [HttpPost]
         public async Task<ActionResult<MenuItemInfoDto>> CreateMenuItem(
-        int restaurantId, MenuItemCreateDto menuItem)
+        MenuItemCreateDto menuItem)
         {
 
-            if (!await _restaurantRepository.RestaurantExistsAsync(restaurantId))
+            var restaurantIdClaim = User.FindFirst("RestaurantId");
+
+            if (restaurantIdClaim == null || !int.TryParse(restaurantIdClaim.Value, out int restaurantId))
             {
-                return BadRequest("Restaurant Not Found");
+                return Unauthorized("Restaurant ID not found in token.");
             }
 
 
@@ -95,18 +101,19 @@ namespace RestaurantReservation.API.Controllers
 
 
         [HttpPut]
-        public async Task<ActionResult> UpdateMenuItem(int restaurantId, MenuItemUpdateDto menuItem)
+        public async Task<ActionResult> UpdateMenuItem(MenuItemUpdateDto menuItem)
         {
+            var restaurantIdClaim = User.FindFirst("RestaurantId");
+
+            if (restaurantIdClaim == null || !int.TryParse(restaurantIdClaim.Value, out int restaurantId))
+            {
+                return Unauthorized("Restaurant ID not found in token.");
+            }
             var menuItemEntity = await _menuItemRepository.GetMenuItemAsync(restaurantId, menuItem.ItemId);
 
             if (menuItemEntity is null)
             {
                 return NotFound();
-            }
-
-            if (!await _restaurantRepository.RestaurantExistsAsync(restaurantId))
-            {
-                return BadRequest("Restaurant Not Found");
             }
 
             _mapper.Map(menuItem, menuItemEntity);
@@ -116,12 +123,14 @@ namespace RestaurantReservation.API.Controllers
             return NoContent();
         }
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteMenuItem(int restaurantId, int id)
+        public async Task<ActionResult> DeleteMenuItem(int id)
         {
 
-            if (!await _restaurantRepository.RestaurantExistsAsync(restaurantId))
+            var restaurantIdClaim = User.FindFirst("RestaurantId");
+
+            if (restaurantIdClaim == null || !int.TryParse(restaurantIdClaim.Value, out int restaurantId))
             {
-                return BadRequest("Restaurant Not Found");
+                return Unauthorized("Restaurant ID not found in token.");
             }
             var menuItemEntity = await _menuItemRepository.GetMenuItemAsync(restaurantId, id);
 

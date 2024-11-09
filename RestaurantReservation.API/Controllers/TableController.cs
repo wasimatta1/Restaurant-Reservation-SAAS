@@ -10,7 +10,7 @@ namespace RestaurantReservation.API.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route("api/restaurants/{restaurantId}/[controller]")]
+    [Route("api/[controller]")]
     public class TableController : Controller
     {
 
@@ -27,12 +27,14 @@ namespace RestaurantReservation.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TableInfoDto>>> GetAllAsync(int restaurantId,
+        public async Task<ActionResult<IEnumerable<TableInfoDto>>> GetAllAsync(
             string? capacity, int pagNumber = 1, int pageSize = 10)
         {
-            if (!await _restaurantRepository.RestaurantExistsAsync(restaurantId))
+            var restaurantIdClaim = User.FindFirst("RestaurantId");
+
+            if (restaurantIdClaim == null || !int.TryParse(restaurantIdClaim.Value, out int restaurantId))
             {
-                return BadRequest("Restaurant Not Found");
+                return Unauthorized("Restaurant ID not found in token.");
             }
 
             if (pageSize > maxCitiesPageSize)
@@ -49,11 +51,13 @@ namespace RestaurantReservation.API.Controllers
         }
 
         [HttpGet("{id}", Name = "GetTable")]
-        public async Task<ActionResult<TableInfoDto>> GetTableByIdAsync(int restaurantId, int id)
+        public async Task<ActionResult<TableInfoDto>> GetTableByIdAsync(int id)
         {
-            if (!await _restaurantRepository.RestaurantExistsAsync(restaurantId))
+            var restaurantIdClaim = User.FindFirst("RestaurantId");
+
+            if (restaurantIdClaim == null || !int.TryParse(restaurantIdClaim.Value, out int restaurantId))
             {
-                return BadRequest("Restaurant Not Found");
+                return Unauthorized("Restaurant ID not found in token.");
             }
 
             var tableEntity = await _tableRepository.GetTableByIdAsync(restaurantId, id);
@@ -67,13 +71,14 @@ namespace RestaurantReservation.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<TableInfoDto>> CreateTable(
-            int restaurantId, TableCreateDto table)
+        public async Task<ActionResult<TableInfoDto>> CreateTable(TableCreateDto table)
         {
 
-            if (!await _restaurantRepository.RestaurantExistsAsync(restaurantId))
+            var restaurantIdClaim = User.FindFirst("RestaurantId");
+
+            if (restaurantIdClaim == null || !int.TryParse(restaurantIdClaim.Value, out int restaurantId))
             {
-                return BadRequest("Restaurant Not Found");
+                return Unauthorized("Restaurant ID not found in token.");
             }
 
 
@@ -95,23 +100,20 @@ namespace RestaurantReservation.API.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateTable(int restaurantId, TableUpdateDto table)
+        public async Task<ActionResult> UpdateTable(TableUpdateDto table)
         {
+            var restaurantIdClaim = User.FindFirst("RestaurantId");
+
+            if (restaurantIdClaim == null || !int.TryParse(restaurantIdClaim.Value, out int restaurantId))
+            {
+                return Unauthorized("Restaurant ID not found in token.");
+            }
             var tablEntity = await _tableRepository.GetTableByIdAsync(
                 restaurantId, table.TableId);
 
             if (tablEntity is null)
             {
                 return NotFound();
-            }
-
-            if (!await _restaurantRepository.RestaurantExistsAsync(restaurantId))
-            {
-                return BadRequest("Restaurant Not Found");
-            }
-            if (!await _restaurantRepository.RestaurantExistsAsync(tablEntity.RestaurantId))
-            {
-                return BadRequest("Restaurant Not Found");
             }
 
             _mapper.Map(table, tablEntity);
@@ -122,12 +124,14 @@ namespace RestaurantReservation.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteTable(int restaurantId, int id)
+        public async Task<ActionResult> DeleteTable(int id)
         {
 
-            if (!await _restaurantRepository.RestaurantExistsAsync(restaurantId))
+            var restaurantIdClaim = User.FindFirst("RestaurantId");
+
+            if (restaurantIdClaim == null || !int.TryParse(restaurantIdClaim.Value, out int restaurantId))
             {
-                return BadRequest("Restaurant Not Found");
+                return Unauthorized("Restaurant ID not found in token.");
             }
             var tableEntity = await _tableRepository.GetTableByIdAsync(restaurantId, id);
 
