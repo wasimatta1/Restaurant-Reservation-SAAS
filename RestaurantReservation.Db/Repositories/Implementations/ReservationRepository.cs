@@ -65,10 +65,17 @@ namespace RestaurantReservation.Db.Repositories.Implementations
             return (reservations, paginationMetadata);
         }
 
-        public async Task<Reservation?> GetReservationAsync(int id)
+        public async Task<Reservation?> GetReservationAsync(int id, bool includeOrder = false)
         {
-            return await _context.Reservations.FindAsync(id);
+            var collection = _context.Reservations.AsQueryable();
+            if (includeOrder)
+            {
+                return await collection.Include(x => x.Orders).ThenInclude(x => x.MenuItems)
+                    .FirstOrDefaultAsync(x => x.ReservationId == id);
+            }
+            return await collection.FirstOrDefaultAsync(x => x.RestaurantId == id);
         }
+
 
         public async Task<bool> SaveChangesAsync()
         {

@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RestaurantReservation.API.DTO_s.MenuItenDto;
+using RestaurantReservation.API.DTO_s.OrderDto;
 using RestaurantReservation.API.DTO_s.ReservationDto;
 using RestaurantReservation.Db.Entities;
 using RestaurantReservation.Db.Repositories.Interfaces;
@@ -128,6 +130,54 @@ namespace RestaurantReservation.API.Controllers
             await _reservationRepository.SaveChangesAsync();
 
             return NoContent();
+        }
+
+
+        [HttpGet("{reservationId}/orders")]
+        public async Task<ActionResult<IEnumerable<OrderInfoDto>>> GetOrdersForReservation(int reservationId)
+        {
+            var reservationEntity = await _reservationRepository.GetReservationAsync(reservationId, true);
+
+            if (reservationEntity is null)
+            {
+                return NotFound();
+            }
+
+            var orders = reservationEntity.Orders;
+
+            return Ok(_mapper.Map<IEnumerable<OrderInfoDto>>(orders));
+
+        }
+
+        [HttpGet("customer/{customerId}")]
+        public async Task<ActionResult<IEnumerable<ReservationInfoDto>>> GetReservationsByCustomer(int customerId)
+        {
+            var customer = await _customerRepository.GetCustomerByIdAsync(customerId);
+
+            if (customer is null)
+            {
+                return NotFound();
+            }
+
+            var reservations = await _customerRepository.GetReservationsByCustomer(customerId);
+
+            return Ok(_mapper.Map<IEnumerable<ReservationInfoDto>>(reservations));
+        }
+        [HttpGet("{reservationId}/menu-items")]
+        public async Task<ActionResult<IEnumerable<MenuItemInfoDto>>> GetMenuItemsForReservation(int reservationId)
+        {
+            var reservationEntity = await _reservationRepository.GetReservationAsync(reservationId, true);
+
+            if (reservationEntity is null)
+            {
+                return NotFound();
+            }
+
+            var orders = reservationEntity.Orders;
+
+            var menuItems = orders.SelectMany(x => x.OrderItems).Select(x => x.MenuItem).Distinct();
+
+            return Ok(_mapper.Map<IEnumerable<MenuItemInfoDto>>(menuItems));
         }
     }
 }

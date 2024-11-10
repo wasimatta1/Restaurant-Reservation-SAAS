@@ -15,12 +15,15 @@ namespace RestaurantReservation.API.Controllers
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IRestaurantRepository _restaurantRepository;
+        private readonly IOrderRepository _orderRepository;
         private readonly IMapper _mapper;
         const int maxCitiesPageSize = 20;
-        public EmployeesController(IEmployeeRepository employeeRepository, IRestaurantRepository restaurantRepository, IMapper mapper)
+        public EmployeesController(IEmployeeRepository employeeRepository, IRestaurantRepository restaurantRepository,
+            IOrderRepository orderRepository, IMapper mapper)
         {
             _employeeRepository = employeeRepository ?? throw new ArgumentNullException(nameof(employeeRepository));
             _restaurantRepository = restaurantRepository ?? throw new ArgumentNullException(nameof(restaurantRepository));
+            _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
@@ -141,6 +144,31 @@ namespace RestaurantReservation.API.Controllers
 
             return NoContent();
 
+        }
+        [HttpGet("managers")]
+        public async Task<ActionResult<IEnumerable<EmployeeInfoDto>>> GetManagersAsync()
+        {
+            return Ok(_mapper.Map<IEnumerable<EmployeeInfoDto>>(await _employeeRepository.ListManagers()));
+        }
+        [HttpGet("{employeeId}/average-order-amount")]
+        public async Task<ActionResult<double>> GetAverageOrderAmount(int employeeId)
+        {
+            var restaurantIdClaim = User.FindFirst("RestaurantId");
+
+            if (restaurantIdClaim == null || !int.TryParse(restaurantIdClaim.Value, out int restaurantId))
+            {
+                return Unauthorized("Restaurant ID not found in token.");
+            }
+            var employeeEntity = await _employeeRepository.GetEmployeeAsync(restaurantId, employeeId);
+
+            if (employeeEntity is null)
+            {
+                return NotFound();
+            }
+
+            var result = await _orderRepository.CalculateAverageOrderAmount(employeeId);
+
+            return Ok(result);
         }
     }
 

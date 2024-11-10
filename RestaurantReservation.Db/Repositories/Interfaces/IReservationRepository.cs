@@ -8,7 +8,7 @@ namespace RestaurantReservation.Db.Repositories.Interfaces
         public Task<(IEnumerable<Reservation>, PaginationMetadata)> GetReservationsAsync(
             string? searchQuery, int pagNumber, int pageSize,
             int? customerId, int? restauranId, int? tableId);
-        public Task<Reservation?> GetReservationAsync(int id);
+        public Task<Reservation?> GetReservationAsync(int id, bool includeOrder = false);
         public Task AddReservationAsync(Reservation reservation);
         public Task DeleteReservationAsync(Reservation reservation);
         public Task<bool> SaveChangesAsync();
