@@ -26,5 +26,10 @@ namespace RestaurantReservation.Db.Repositories.Implementations
         {
             return await _context.OrderItems.AnyAsync(x => x.OrderItemId == id);
         }
+
+        public async Task RemoveOrderItem(OrderItem orderItem)
+        {
+            _context.OrderItems.Remove(orderItem);
+        }
     }
 }

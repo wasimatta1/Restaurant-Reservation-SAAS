@@ -81,7 +81,7 @@ namespace RestaurantReservation.Db.Repositories.Implementations
 
         public async Task<Order?> GetOrderAsync(int restaurantId, int id)
         {
-            return await _context.Orders.Include(x => x.Employee)
+            return await _context.Orders.Include(x => x.Employee).Include(x => x.MenuItems)
                 .Where(x => x.Employee.RestaurantId == restaurantId && x.OrderId == id)
                 .FirstOrDefaultAsync();
         }
@@ -102,6 +102,7 @@ namespace RestaurantReservation.Db.Repositories.Implementations
 
         public async Task DeleteOrderAsync(Order order)
         {
+            _context.OrderItems.RemoveRange(order.OrderItems);
             _context.Orders.Remove(order);
         }
 
