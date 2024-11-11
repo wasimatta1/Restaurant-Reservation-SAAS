@@ -49,7 +49,7 @@ namespace RestaurantReservation.Db.Repositories.Implementations
 
         public async Task AddCustomerAsync(Customer customer)
         {
-            var lastCustomerId = await _context.Customers.CountAsync();
+            var lastCustomerId = _context.Customers.Max(x => x.Id);
 
             customer.Id = lastCustomerId + 1;
 

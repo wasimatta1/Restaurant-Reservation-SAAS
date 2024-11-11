@@ -1,4 +1,4 @@
-
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -6,6 +6,7 @@ using RestaurantReservation.API.JWTToken;
 using RestaurantReservation.Db.Data;
 using RestaurantReservation.Db.Repositories.Implementations;
 using RestaurantReservation.Db.Repositories.Interfaces;
+using System.Reflection;
 using System.Text;
 
 namespace RestaurantReservation.API
@@ -17,6 +18,10 @@ namespace RestaurantReservation.API
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+
+            builder.Services.AddFluentValidation(x =>
+                    x.RegisterValidatorsFromAssemblies(new[] { Assembly.GetExecutingAssembly() }));
+
 
             builder.Services.AddControllers()
                 .AddJsonOptions(options =>
@@ -87,6 +92,8 @@ namespace RestaurantReservation.API
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

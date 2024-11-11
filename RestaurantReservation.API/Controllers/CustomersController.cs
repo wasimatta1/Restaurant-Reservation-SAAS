@@ -56,6 +56,7 @@ namespace RestaurantReservation.API.Controllers
         [HttpPost]
         public async Task<ActionResult<CustomerInfoDto>> CreateCustomter(CustomerInfoDto customer)
         {
+
             var customerEntity = _mapper.Map<Customer>(customer);
 
             await _customerRepository.AddCustomerAsync(customerEntity);

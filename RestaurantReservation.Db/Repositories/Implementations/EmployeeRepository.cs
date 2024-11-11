@@ -15,7 +15,7 @@ namespace RestaurantReservation.Db.Repositories.Implementations
         public async Task AddEmployeeAsync(Employee employee)
         {
 
-            var lastEmployeeId = _context.Employees.Count();
+            var lastEmployeeId = _context.Employees.Max(x => x.EmployeeId);
 
             employee.EmployeeId = lastEmployeeId + 1;
 
