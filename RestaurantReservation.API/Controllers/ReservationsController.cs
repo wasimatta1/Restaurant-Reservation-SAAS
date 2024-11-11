@@ -30,7 +30,22 @@ namespace RestaurantReservation.API.Controllers
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
+        /// <summary>
+        /// Retrieves a list of reservations with optional filtering by search query, customer, restaurant, and table.
+        /// </summary>
+        /// <param name="searchQuery">Optional search term to filter reservations.</param>
+        /// <param name="customerId">Optional customer ID to filter reservations.</param>
+        /// <param name="restauranId">Optional restaurant ID to filter reservations.</param>
+        /// <param name="tableId">Optional table ID to filter reservations.</param>
+        /// <param name="pagNumber">Page number for pagination.</param>
+        /// <param name="pageSize">Page size for pagination.</param>
+        /// <returns>A list of reservations matching the search criteria.</returns>
+        /// <response code="200">Returns a paginated list of reservations.</response>
+        /// <response code="401">If the Restaurant ID is not found in the token.</response>
+
         [HttpGet]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
         public async Task<ActionResult<IEnumerable<ReservationInfoDto>>> GetAllAsync(
             string? searchQuery, int? customerId, int? restauranId,
             int? tableId, int pagNumber = 1, int pageSize = 10)
@@ -47,7 +62,19 @@ namespace RestaurantReservation.API.Controllers
 
             return Ok(_mapper.Map<IEnumerable<ReservationInfoDto>>(reservationEntities));
         }
+
+
+        /// <summary>
+        /// Retrieves a specific reservation by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the reservation to retrieve.</param>
+        /// <returns>An <see cref="ReservationInfoDto"/> object representing the reservation.</returns>
+        /// <response code="200">Returns the requested reservation if found.</response>
+        /// <response code="404">If the reservation is not found.</response>
+
         [HttpGet("{id}", Name = "GetReservation")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<ReservationInfoDto>> GetReservationAsync(int id)
         {
             var reservationEntity = await _reservationRepository.GetReservationAsync(id);
@@ -59,7 +86,19 @@ namespace RestaurantReservation.API.Controllers
 
             return Ok(_mapper.Map<ReservationInfoDto>(reservationEntity));
         }
+
+
+        /// <summary>
+        /// Creates a new reservation for a customer at a specified restaurant and table.
+        /// </summary>
+        /// <param name="reservation">An object containing the details of the reservation to create.</param>
+        /// <returns>The created <see cref="ReservationInfoDto"/> object.</returns>
+        /// <response code="201">Returns the newly created reservation.</response>
+        /// <response code="400">If the restaurant, customer, or table does not exist.</response>
+        /// 
         [HttpPost]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
         public async Task<ActionResult<ReservationInfoDto>> CreateReservation(ReservationCreateDto reservation)
         {
             var reservationEntity = _mapper.Map<Reservation>(reservation);
@@ -89,7 +128,19 @@ namespace RestaurantReservation.API.Controllers
                  },
                  reservation);
         }
+
+
+        /// <summary>
+        /// Deletes a specific reservation by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the reservation to delete.</param>
+        /// <returns>A <see cref="NoContentResult"/> if the deletion is successful.</returns>
+        /// <response code="204">If the deletion is successful.</response>
+        /// <response code="404">If the reservation is not found.</response>
+        /// 
         [HttpDelete("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult> DeleteReservation(int id)
         {
             var reservationEntity = await _reservationRepository.GetReservationAsync(id);
@@ -106,7 +157,20 @@ namespace RestaurantReservation.API.Controllers
             return NoContent();
 
         }
+
+        /// <summary>
+        /// Updates an existing reservation by its ID.
+        /// </summary>
+        /// <param name="reservation">An object containing the updated details of the reservation.</param>
+        /// <returns>A <see cref="NoContentResult"/> if the update is successful.</returns>
+        /// <response code="204">If the update is successful.</response>
+        /// <response code="400">If the customer or table does not exist.</response>
+        /// <response code="404">If the reservation is not found.</response>
+
         [HttpPut]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult> UpdateReservation(ReservationUpdateDto reservation)
         {
             var reservationEntity = await _reservationRepository.GetReservationAsync(reservation.ReservationId);
@@ -132,8 +196,17 @@ namespace RestaurantReservation.API.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Retrieves all orders associated with a specific reservation.
+        /// </summary>
+        /// <param name="reservationId">The ID of the reservation.</param>
+        /// <returns>A list of orders related to the reservation.</returns>
+        /// <response code="200">Returns a list of orders for the reservation.</response>
+        /// <response code="404">If the reservation is not found.</response>
 
         [HttpGet("{reservationId}/orders")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<IEnumerable<OrderInfoDto>>> GetOrdersForReservation(int reservationId)
         {
             var reservationEntity = await _reservationRepository.GetReservationAsync(reservationId, true);
@@ -149,7 +222,17 @@ namespace RestaurantReservation.API.Controllers
 
         }
 
+        /// <summary>
+        /// Retrieves all reservations for a specific customer.
+        /// </summary>
+        /// <param name="customerId">The ID of the customer.</param>
+        /// <returns>A list of reservations for the customer.</returns>
+        /// <response code="200">Returns a list of reservations for the customer.</response>
+        /// <response code="404">If the customer is not found.</response>
+
         [HttpGet("customer/{customerId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<IEnumerable<ReservationInfoDto>>> GetReservationsByCustomer(int customerId)
         {
             var customer = await _customerRepository.GetCustomerByIdAsync(customerId);
@@ -163,7 +246,18 @@ namespace RestaurantReservation.API.Controllers
 
             return Ok(_mapper.Map<IEnumerable<ReservationInfoDto>>(reservations));
         }
+
+        /// <summary>
+        /// Retrieves all menu items associated with a specific reservation by examining its orders.
+        /// </summary>
+        /// <param name="reservationId">The ID of the reservation.</param>
+        /// <returns>A list of distinct menu items ordered for the reservation.</returns>
+        /// <response code="200">Returns a list of menu items ordered for the reservation.</response>
+        /// <response code="404">If the reservation is not found.</response>
+
         [HttpGet("{reservationId}/menu-items")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<IEnumerable<MenuItemInfoDto>>> GetMenuItemsForReservation(int reservationId)
         {
             var reservationEntity = await _reservationRepository.GetReservationAsync(reservationId, true);

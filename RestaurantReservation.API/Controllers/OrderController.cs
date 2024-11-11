@@ -29,7 +29,21 @@ namespace RestaurantReservation.API.Controllers
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
+
+        /// <summary>
+        /// Retrieves a list of orders for the authenticated restaurant with optional filtering by search query, employee, and reservation.
+        /// </summary>
+        /// <param name="searchQuery">Optional search term to filter orders.</param>
+        /// <param name="employeeId">Optional ID of the employee to filter orders.</param>
+        /// <param name="reservatiooId">Optional reservation ID to filter orders.</param>
+        /// <param name="pagNumber">Page number for pagination.</param>
+        /// <param name="pageSize">Page size for pagination.</param>
+        /// <returns>A list of orders matching the search criteria.</returns>
+        /// <response code="200">Returns a paginated list of orders.</response>
+        /// <response code="401">If the Restaurant ID is not found in the token.</response>
         [HttpGet]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
         public async Task<ActionResult<IEnumerable<OrderInfoDto>>> GetAllAsync(
                 string? searchQuery, int? employeeId, int? reservatiooId,
                  int pagNumber = 1, int pageSize = 10)
@@ -53,7 +67,19 @@ namespace RestaurantReservation.API.Controllers
             return Ok(_mapper.Map<IEnumerable<OrderInfoDto>>(orderEntities));
         }
 
+        /// <summary>
+        /// Retrieves a specific order by its ID for the authenticated restaurant.
+        /// </summary>
+        /// <param name="id">The ID of the order to retrieve.</param>
+        /// <returns>An <see cref="OrderInfoDto"/> object representing the order.</returns>
+        /// <response code="200">Returns the requested order if found.</response>
+        /// <response code="401">If the Restaurant ID is not found in the token.</response>
+        /// <response code="404">If the order is not found.</response>
+        /// 
         [HttpGet("{id}", Name = "GetOrder")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<OrderInfoDto>> GetOrderAsync(int id)
         {
             var restaurantIdClaim = User.FindFirst("RestaurantId");
@@ -71,7 +97,20 @@ namespace RestaurantReservation.API.Controllers
 
             return Ok(_mapper.Map<OrderInfoDto>(orderEntity));
         }
+
+
+        /// <summary>
+        /// Creates a new order for the authenticated restaurant.
+        /// </summary>
+        /// <param name="order">An object containing the details of the order to create.</param>
+        /// <returns>The created <see cref="OrderInfoDto"/> object.</returns>
+        /// <response code="201">Returns the newly created order.</response>
+        /// <response code="400">If the reservation, employee, or menu item does not exist.</response>
+        /// <response code="401">If the Restaurant ID is not found in the token.</response>
         [HttpPost]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         public async Task<ActionResult<OrderInfoDto>> CreateOrder(OrderCreateDto order)
         {
             var orderEntity = _mapper.Map<Order>(order);
@@ -112,31 +151,22 @@ namespace RestaurantReservation.API.Controllers
                  order);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteOrder(int id)
-        {
-            var restaurantIdClaim = User.FindFirst("RestaurantId");
 
-            if (restaurantIdClaim == null || !int.TryParse(restaurantIdClaim.Value, out int restaurantId))
-            {
-                return Unauthorized("Restaurant ID not found in token.");
-            }
-            var orderEntity = await _orderRepository.GetOrderAsync(restaurantId, id);
-
-            if (orderEntity is null)
-            {
-                return NotFound();
-            }
-
-            await _orderRepository.DeleteOrderAsync(orderEntity);
-
-            await _orderRepository.SaveChangesAsync();
-
-            return NoContent();
-
-        }
+        /// <summary>
+        /// Updates an existing order for the authenticated restaurant.
+        /// </summary>
+        /// <param name="order">An object containing the updated details of the order.</param>
+        /// <returns>A <see cref="NoContentResult"/> if the update is successful.</returns>
+        /// <response code="204">If the update is successful.</response>
+        /// <response code="400">If the reservation, employee, or menu item does not exist.</response>
+        /// <response code="401">If the Restaurant ID is not found in the token.</response>
+        /// <response code="404">If the order is not found.</response>
 
         [HttpPut]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult> UpdateOrder(OrderUpdateDto order)
         {
             var restaurantIdClaim = User.FindFirst("RestaurantId");
@@ -174,5 +204,43 @@ namespace RestaurantReservation.API.Controllers
 
             return NoContent();
         }
+
+
+        /// <summary>
+        /// Deletes a specific order by its ID for the authenticated restaurant.
+        /// </summary>
+        /// <param name="id">The ID of the order to delete.</param>
+        /// <returns>A <see cref="NoContentResult"/> if the deletion is successful.</returns>
+        /// <response code="204">If the deletion is successful.</response>
+        /// <response code="401">If the Restaurant ID is not found in the token.</response>
+        /// <response code="404">If the order is not found.</response>
+        /// 
+        [HttpDelete("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult> DeleteOrder(int id)
+        {
+            var restaurantIdClaim = User.FindFirst("RestaurantId");
+
+            if (restaurantIdClaim == null || !int.TryParse(restaurantIdClaim.Value, out int restaurantId))
+            {
+                return Unauthorized("Restaurant ID not found in token.");
+            }
+            var orderEntity = await _orderRepository.GetOrderAsync(restaurantId, id);
+
+            if (orderEntity is null)
+            {
+                return NotFound();
+            }
+
+            await _orderRepository.DeleteOrderAsync(orderEntity);
+
+            await _orderRepository.SaveChangesAsync();
+
+            return NoContent();
+
+        }
+
     }
 }

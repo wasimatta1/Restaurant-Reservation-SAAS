@@ -2,8 +2,19 @@
 {
     public class BaseEmployeeDto
     {
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
-        public string? Position { get; set; }
+        /// <summary>
+        /// the first name of the employee
+        /// </summary>
+        public string FirstName { get; set; }
+
+        /// <summary>
+        /// the last name of the employee
+        /// </summary>
+        public string LastName { get; set; }
+
+        /// <summary>
+        /// the position of the employee
+        /// </summary>
+        public string Position { get; set; }
     }
 }

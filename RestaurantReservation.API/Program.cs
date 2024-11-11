@@ -30,30 +30,6 @@ namespace RestaurantReservation.API
                     System.Text.Json.Serialization.ReferenceHandler.Preserve;
                 });
 
-            builder.Services.AddAuthentication(k =>
-            {
-                k.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                k.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(p =>
-            {
-                var key = Encoding.UTF8.GetBytes(builder.Configuration["JWTToken:Key"]);
-                p.SaveToken = true;
-                p.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidateLifetime = false,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = builder.Configuration["JWTToken:Issuer"],
-                    ValidAudience = builder.Configuration["JWTToken:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(key)
-
-                };
-            });
-
-            builder.Services.AddAuthorization();
-            builder.Services.AddScoped<IJwtTokenService, jwtTokenGenerator>();
-
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -79,6 +55,9 @@ namespace RestaurantReservation.API
                         new string[] {}
                     }
                 });
+                var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
+                setupAction.IncludeXmlComments(xmlCommentsFullPath);
             });
             builder.Services.AddDbContext<RestaurantReservationDbContext>();
 
@@ -93,6 +72,30 @@ namespace RestaurantReservation.API
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+
+            builder.Services.AddAuthorization();
+            builder.Services.AddAuthentication(k =>
+            {
+                k.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                k.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(p =>
+            {
+                var key = Encoding.UTF8.GetBytes(builder.Configuration["JWTToken:Key"]);
+                p.SaveToken = true;
+                p.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = false,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["JWTToken:Issuer"],
+                    ValidAudience = builder.Configuration["JWTToken:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(key)
+
+                };
+            });
+
+            builder.Services.AddScoped<IJwtTokenService, jwtTokenGenerator>();
 
             var app = builder.Build();
 

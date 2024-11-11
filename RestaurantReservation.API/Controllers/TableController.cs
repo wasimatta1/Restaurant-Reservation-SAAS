@@ -26,7 +26,19 @@ namespace RestaurantReservation.API.Controllers
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
+        /// <summary>
+        /// Retrieves a list of tables with optional filtering by capacity.
+        /// </summary>
+        /// <param name="capacity">Optional capacity to filter tables by.</param>
+        /// <param name="pagNumber">Page number for pagination.</param>
+        /// <param name="pageSize">Page size for pagination.</param>
+        /// <returns>A list of tables matching the search criteria.</returns>
+        /// <response code="200">Returns a paginated list of tables.</response>
+        /// <response code="401">If the Restaurant ID is not found in the token.</response>
+
         [HttpGet]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
         public async Task<ActionResult<IEnumerable<TableInfoDto>>> GetAllAsync(
             string? capacity, int pagNumber = 1, int pageSize = 10)
         {
@@ -50,7 +62,18 @@ namespace RestaurantReservation.API.Controllers
             return Ok(_mapper.Map<IEnumerable<TableInfoDto>>(tableEntities));
         }
 
+        /// <summary>
+        /// Retrieves a specific table by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the table to retrieve.</param>
+        /// <returns>A <see cref="TableInfoDto"/> object representing the table.</returns>
+        /// <response code="200">Returns the requested table if found.</response>
+        /// <response code="404">If the table is not found.</response>
+        /// <response code="401">If the Restaurant ID is not found in the token.</response>
+
         [HttpGet("{id}", Name = "GetTable")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<TableInfoDto>> GetTableByIdAsync(int id)
         {
             var restaurantIdClaim = User.FindFirst("RestaurantId");
@@ -70,7 +93,19 @@ namespace RestaurantReservation.API.Controllers
             return Ok(_mapper.Map<TableInfoDto>(tableEntity));
         }
 
+        /// <summary>
+        /// Creates a new table for the restaurant.
+        /// </summary>
+        /// <param name="table">An object containing the details of the table to create.</param>
+        /// <returns>The created <see cref="TableInfoDto"/> object.</returns>
+        /// <response code="201">Returns the newly created table.</response>
+        /// <response code="401">If the Restaurant ID is not found in the token.</response>
+        /// <response code="400">If the provided table data is invalid.</response>
+
         [HttpPost]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         public async Task<ActionResult<TableInfoDto>> CreateTable(TableCreateDto table)
         {
 
@@ -99,7 +134,19 @@ namespace RestaurantReservation.API.Controllers
                  table);
         }
 
+        /// <summary>
+        /// Updates an existing table by its ID.
+        /// </summary>
+        /// <param name="table">An object containing the updated details of the table.</param>
+        /// <returns>A <see cref="NoContentResult"/> if the update is successful.</returns>
+        /// <response code="204">If the update is successful.</response>
+        /// <response code="401">If the Restaurant ID is not found in the token.</response>
+        /// <response code="404">If the table is not found.</response>
+
         [HttpPut]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult> UpdateTable(TableUpdateDto table)
         {
             var restaurantIdClaim = User.FindFirst("RestaurantId");
@@ -123,7 +170,19 @@ namespace RestaurantReservation.API.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Deletes a specific table by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the table to delete.</param>
+        /// <returns>A <see cref="NoContentResult"/> if the deletion is successful.</returns>
+        /// <response code="204">If the deletion is successful.</response>
+        /// <response code="401">If the Restaurant ID is not found in the token.</response>
+        /// <response code="404">If the table is not found.</response>
+
         [HttpDelete("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult> DeleteTable(int id)
         {
 

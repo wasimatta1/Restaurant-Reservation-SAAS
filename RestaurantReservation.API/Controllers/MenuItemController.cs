@@ -25,7 +25,19 @@ namespace RestaurantReservation.API.Controllers
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
+        /// <summary>
+        /// Retrieves a paginated list of menu items for the authenticated restaurant, with optional search and filtering.
+        /// </summary>
+        /// <param name="name">An optional filter for the name of menu items.</param>
+        /// <param name="searchQuery">An optional search query to further filter the menu items.</param>
+        /// <param name="pagNumber">The page number for pagination.</param>
+        /// <param name="pageSize">The number of items per page for pagination. The maximum allowed value is limited by <c>maxCitiesPageSize</c>.</param>
+        /// <returns>A paginated list of <see cref="MenuItemInfoDto"/> objects representing the menu items.</returns>
+        /// <response code="200">Returns the paginated list of menu items.</response>
+        /// <response code="401">If the Restaurant ID is not found in the token.</response>
         [HttpGet]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
         public async Task<ActionResult<IEnumerable<MenuItemInfoDto>>> GetAllAsync(
         string? name, string? searchQuery, int pagNumber = 1, int pageSize = 10)
         {
@@ -48,7 +60,20 @@ namespace RestaurantReservation.API.Controllers
 
             return Ok(_mapper.Map<IEnumerable<MenuItemInfoDto>>(MenuItemEntities));
         }
+
+
+        /// <summary>
+        /// Retrieves a specific menu item by its ID for the authenticated restaurant.
+        /// </summary>
+        /// <param name="id">The ID of the menu item to retrieve.</param>
+        /// <returns>A <see cref="MenuItemInfoDto"/> object representing the menu item.</returns>
+        /// <response code="200">Returns the requested menu item if found.</response>
+        /// <response code="401">If the Restaurant ID is not found in the token.</response>
+        /// <response code="404">If the menu item is not found.</response>
         [HttpGet("{id}", Name = "GetMenuItem")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<MenuItemInfoDto>> GetMenuItemAsync(int id)
         {
             var restaurantIdClaim = User.FindFirst("RestaurantId");
@@ -68,8 +93,18 @@ namespace RestaurantReservation.API.Controllers
             return Ok(_mapper.Map<MenuItemInfoDto>(menuItemEntity));
         }
 
-
+        /// <summary>
+        /// Creates a new menu item for the authenticated restaurant.
+        /// </summary>
+        /// <param name="menuItem">An object containing the details of the menu item to create.</param>
+        /// <returns>The created <see cref="MenuItemInfoDto"/> object.</returns>
+        /// <response code="201">Returns the newly created menu item.</response>
+        /// <response code="400">If the provided menu item data is invalid.</response>
+        /// <response code="401">If the Restaurant ID is not found in the token.</response>
         [HttpPost]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         public async Task<ActionResult<MenuItemInfoDto>> CreateMenuItem(
         MenuItemCreateDto menuItem)
         {
@@ -99,8 +134,20 @@ namespace RestaurantReservation.API.Controllers
                  menuItem);
         }
 
-
+        /// <summary>
+        /// Updates an existing menu item for the authenticated restaurant.
+        /// </summary>
+        /// <param name="menuItem">An object containing the updated details of the menu item.</param>
+        /// <returns>A <see cref="NoContentResult"/> if the update is successful.</returns>
+        /// <response code="204">If the update is successful.</response>
+        /// <response code="400">If the provided menu item data is invalid.</response>
+        /// <response code="401">If the Restaurant ID is not found in the token.</response>
+        /// <response code="404">If the menu item is not found.</response>
         [HttpPut]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult> UpdateMenuItem(MenuItemUpdateDto menuItem)
         {
             var restaurantIdClaim = User.FindFirst("RestaurantId");
@@ -122,7 +169,20 @@ namespace RestaurantReservation.API.Controllers
 
             return NoContent();
         }
+
+
+        /// <summary>
+        /// Deletes a specific menu item by its ID for the authenticated restaurant.
+        /// </summary>
+        /// <param name="id">The ID of the menu item to delete.</param>
+        /// <returns>A <see cref="NoContentResult"/> if the deletion is successful.</returns>
+        /// <response code="204">If the deletion is successful.</response>
+        /// <response code="401">If the Restaurant ID is not found in the token.</response>
+        /// <response code="404">If the menu item is not found.</response>
         [HttpDelete("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult> DeleteMenuItem(int id)
         {
 

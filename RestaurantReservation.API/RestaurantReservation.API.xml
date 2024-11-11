@@ -1,0 +1,568 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>RestaurantReservation.API</name>
+    </assembly>
+    <members>
+        <member name="M:RestaurantReservation.API.Controllers.AuthenticationController.Authenticate(RestaurantReservation.API.DTO_s.TokenDto.EmployeeTokenDto)">
+            <summary>
+            Authenticates an employee by generating a JWT token if the employee is valid.
+            </summary>
+            <param name="employee">An object containing the employee's credentials for authentication (username(first name), password(Id)).</param>
+            <response code="200">Returns the JWT tokens.</response>
+            <response code="401">If the employee is not signed up.</response>
+            <returns> A JWT tokens. </returns>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.CustomersController.GetAllAsync(System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Retrieves all customers with support for pagination and search query.
+            </summary>
+            <param name="name">An optional filter to search for customers by name.</param>
+            <param name="searchQuery">An optional search query to filter customers based on other fields (e.g., email, address).</param>
+            <param name="pagNumber">The page number for pagination. Defaults to 1.</param>
+            <param name="pageSize">The number of customers to retrieve per page. Defaults to 10. Maximum allowed value is 10.</param>
+            <response code="200">Returns a list of customers with pagination information.</response>
+            <returns>A list of customer information along with pagination metadata.</returns>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.CustomersController.GetCustomerByIdAsync(System.Int32)">
+            <summary>
+            Retrieves a customer by their ID.
+            </summary>
+            <param name="id">The unique identifier of the customer to retrieve.</param>
+            <returns>A <see cref="T:RestaurantReservation.API.DTO_s.CustomerDto.CustomerInfoDto"/> representing the customer, or a 404 Not Found response if the customer doesn't exist.</returns>
+            <response code="200">Returns the customer information.</response>
+            <response code="404">If the customer with the specified ID is not found.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.CustomersController.CreateCustomter(RestaurantReservation.API.DTO_s.CustomerDto.CustomerInfoDto)">
+            <summary>
+            Creates a new customer
+            </summary>
+            <param name="customer">The customer information, provided as a <see cref="T:RestaurantReservation.API.DTO_s.CustomerDto.CustomerInfoDto"/>.</param>
+            <returns>A <see cref="T:RestaurantReservation.API.DTO_s.CustomerDto.CustomerInfoDto"/> representing the created customer, with a location header pointing to the newly created customer.</returns>
+            <response code="201">Returns the created customer information.</response>
+            <response code="400">If the provided customer data is invalid.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.CustomersController.UpdateCustomer(RestaurantReservation.API.DTO_s.CustomerDto.CustomerUpdaetDto)">
+            <summary>
+            Updates an existing customer's information.
+            </summary>
+            <param name="customer">The customer information to update, provided as a <see cref="!:CustomerUpdateDto"/>.</param>
+            <returns>A <see cref="T:Microsoft.AspNetCore.Mvc.NoContentResult"/> if the update is successful.</returns>
+            <response code="204">If the customer is successfully updated.</response>
+            <response code="404">If the customer with the specified ID is not found.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.CustomersController.DeleteCustomer(System.Int32)">
+            <summary>
+            Deletes a customer by their ID.
+            </summary>
+            <param name="id">The unique identifier of the customer to delete.</param>
+            <returns>A <see cref="T:Microsoft.AspNetCore.Mvc.NoContentResult"/> if the deletion is successful.</returns>
+            <response code="204">If the customer is successfully deleted.</response>
+            <response code="404">If the customer with the specified ID is not found.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.EmployeesController.GetAllAsync(System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Retrieves a paginated list of employees, with optional filters for name and search query.
+            </summary>
+            <param name="name">An optional parameter to filter employees by name.</param>
+            <param name="searchQuery">An optional search query to match employee details.</param>
+            <param name="pagNumber">The page number for pagination.</param>
+            <param name="pageSize">The number of items per page (max is restricted).</param>
+            <returns>A paginated list of employees matching the filters.</returns>
+            <response code="200">Returns a list of employees along with pagination metadata in the headers.</response>
+            <response code="401">If the Restaurant ID is not found in the token.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.EmployeesController.GetEmployeeByIdAsync(System.Int32)">
+            <summary>
+            Retrieves an employee's information by their ID.
+            </summary>
+            <param name="id">The unique identifier of the employee to retrieve.</param>
+            <returns>An <see cref="T:RestaurantReservation.API.DTO_s.EmployeeDto.EmployeeInfoDto"/> with the employee's details.</returns>
+            <response code="200">Returns the employee's details.</response>
+            <response code="401">If the Restaurant ID is not found in the token.</response>
+            <response code="404">If the employee with the specified ID is not found.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.EmployeesController.CreateEmployee(RestaurantReservation.API.DTO_s.EmployeeDto.EmployeeCreateDto)">
+            <summary>
+            Creates a new employee for the authenticated restaurant.
+            </summary>
+            <param name="employee">An <see cref="T:RestaurantReservation.API.DTO_s.EmployeeDto.EmployeeCreateDto"/> object containing the employee's details.</param>
+            <returns>The created <see cref="T:RestaurantReservation.API.DTO_s.EmployeeDto.EmployeeInfoDto"/> with the employee's information.</returns>
+            <response code="201">Returns the newly created employee.</response>
+            <response code="401">If the Restaurant ID is not found in the token.</response>
+            <response code="400">If the provided employee data is invalid.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.EmployeesController.UpdateEmployee(RestaurantReservation.API.DTO_s.EmployeeDto.EmployeeUpdateDto)">
+            <summary>
+            Updates the details of an existing employee for the authenticated restaurant.
+            </summary>
+            <param name="employee">An <see cref="T:RestaurantReservation.API.DTO_s.EmployeeDto.EmployeeUpdateDto"/> object containing the updated employee information.</param>
+            <returns>A response indicating the result of the update operation.</returns>
+            <response code="400">If the provided employee data is invalid.</response>
+            <response code="204">Indicates that the employee details were successfully updated.</response>
+            <response code="401">If the Restaurant ID is not found in the token.</response>
+            <response code="404">If the employee with the specified ID is not found for the given Restaurant ID.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.EmployeesController.DeleteEmployee(System.Int32)">
+            <summary>
+            Deletes an employee from the authenticated restaurant's records.
+            </summary>
+            <param name="id">The unique identifier of the employee to delete.</param>
+            <returns>A response indicating the result of the delete operation.</returns>
+            <response code="204">Indicates that the employee was successfully deleted.</response>
+            <response code="401">If the Restaurant ID is not found in the token.</response>
+            <response code="404">If the employee with the specified ID is not found.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.EmployeesController.GetManagersAsync">
+            <summary>
+            Retrieves a list of all managers in the restaurant.
+            </summary>
+            <returns>A list of managers as <see cref="T:RestaurantReservation.API.DTO_s.EmployeeDto.EmployeeInfoDto"/> objects.</returns>
+            <response code="200">Returns the list of managers.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.EmployeesController.GetAverageOrderAmount(System.Int32)">
+            <summary>
+            Retrieves the average order amount for a specified employee in the authenticated restaurant.
+            </summary>
+            <param name="employeeId">The unique identifier of the employee for whom the average order amount is calculated.</param>
+            <returns>The average order amount for the specified employee.</returns>
+            <response code="200">Returns the average order amount.</response>
+            <response code="401">If the Restaurant ID is not found in the token.</response>
+            <response code="404">If the specified employee is not found in the restaurant.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.MenuItemController.GetAllAsync(System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Retrieves a paginated list of menu items for the authenticated restaurant, with optional search and filtering.
+            </summary>
+            <param name="name">An optional filter for the name of menu items.</param>
+            <param name="searchQuery">An optional search query to further filter the menu items.</param>
+            <param name="pagNumber">The page number for pagination.</param>
+            <param name="pageSize">The number of items per page for pagination. The maximum allowed value is limited by <c>maxCitiesPageSize</c>.</param>
+            <returns>A paginated list of <see cref="T:RestaurantReservation.API.DTO_s.MenuItenDto.MenuItemInfoDto"/> objects representing the menu items.</returns>
+            <response code="200">Returns the paginated list of menu items.</response>
+            <response code="401">If the Restaurant ID is not found in the token.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.MenuItemController.GetMenuItemAsync(System.Int32)">
+            <summary>
+            Retrieves a specific menu item by its ID for the authenticated restaurant.
+            </summary>
+            <param name="id">The ID of the menu item to retrieve.</param>
+            <returns>A <see cref="T:RestaurantReservation.API.DTO_s.MenuItenDto.MenuItemInfoDto"/> object representing the menu item.</returns>
+            <response code="200">Returns the requested menu item if found.</response>
+            <response code="401">If the Restaurant ID is not found in the token.</response>
+            <response code="404">If the menu item is not found.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.MenuItemController.CreateMenuItem(RestaurantReservation.API.DTO_s.MenuItenDto.MenuItemCreateDto)">
+            <summary>
+            Creates a new menu item for the authenticated restaurant.
+            </summary>
+            <param name="menuItem">An object containing the details of the menu item to create.</param>
+            <returns>The created <see cref="T:RestaurantReservation.API.DTO_s.MenuItenDto.MenuItemInfoDto"/> object.</returns>
+            <response code="201">Returns the newly created menu item.</response>
+            <response code="400">If the provided menu item data is invalid.</response>
+            <response code="401">If the Restaurant ID is not found in the token.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.MenuItemController.UpdateMenuItem(RestaurantReservation.API.DTO_s.MenuItenDto.MenuItemUpdateDto)">
+            <summary>
+            Updates an existing menu item for the authenticated restaurant.
+            </summary>
+            <param name="menuItem">An object containing the updated details of the menu item.</param>
+            <returns>A <see cref="T:Microsoft.AspNetCore.Mvc.NoContentResult"/> if the update is successful.</returns>
+            <response code="204">If the update is successful.</response>
+            <response code="400">If the provided menu item data is invalid.</response>
+            <response code="401">If the Restaurant ID is not found in the token.</response>
+            <response code="404">If the menu item is not found.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.MenuItemController.DeleteMenuItem(System.Int32)">
+            <summary>
+            Deletes a specific menu item by its ID for the authenticated restaurant.
+            </summary>
+            <param name="id">The ID of the menu item to delete.</param>
+            <returns>A <see cref="T:Microsoft.AspNetCore.Mvc.NoContentResult"/> if the deletion is successful.</returns>
+            <response code="204">If the deletion is successful.</response>
+            <response code="401">If the Restaurant ID is not found in the token.</response>
+            <response code="404">If the menu item is not found.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.OrderController.GetAllAsync(System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Int32,System.Int32)">
+            <summary>
+            Retrieves a list of orders for the authenticated restaurant with optional filtering by search query, employee, and reservation.
+            </summary>
+            <param name="searchQuery">Optional search term to filter orders.</param>
+            <param name="employeeId">Optional ID of the employee to filter orders.</param>
+            <param name="reservatiooId">Optional reservation ID to filter orders.</param>
+            <param name="pagNumber">Page number for pagination.</param>
+            <param name="pageSize">Page size for pagination.</param>
+            <returns>A list of orders matching the search criteria.</returns>
+            <response code="200">Returns a paginated list of orders.</response>
+            <response code="401">If the Restaurant ID is not found in the token.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.OrderController.GetOrderAsync(System.Int32)">
+            <summary>
+            Retrieves a specific order by its ID for the authenticated restaurant.
+            </summary>
+            <param name="id">The ID of the order to retrieve.</param>
+            <returns>An <see cref="T:RestaurantReservation.API.DTO_s.OrderDto.OrderInfoDto"/> object representing the order.</returns>
+            <response code="200">Returns the requested order if found.</response>
+            <response code="401">If the Restaurant ID is not found in the token.</response>
+            <response code="404">If the order is not found.</response>
+            
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.OrderController.CreateOrder(RestaurantReservation.API.DTO_s.OrderDto.OrderCreateDto)">
+            <summary>
+            Creates a new order for the authenticated restaurant.
+            </summary>
+            <param name="order">An object containing the details of the order to create.</param>
+            <returns>The created <see cref="T:RestaurantReservation.API.DTO_s.OrderDto.OrderInfoDto"/> object.</returns>
+            <response code="201">Returns the newly created order.</response>
+            <response code="400">If the reservation, employee, or menu item does not exist.</response>
+            <response code="401">If the Restaurant ID is not found in the token.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.OrderController.UpdateOrder(RestaurantReservation.API.DTO_s.OrderDto.OrderUpdateDto)">
+            <summary>
+            Updates an existing order for the authenticated restaurant.
+            </summary>
+            <param name="order">An object containing the updated details of the order.</param>
+            <returns>A <see cref="T:Microsoft.AspNetCore.Mvc.NoContentResult"/> if the update is successful.</returns>
+            <response code="204">If the update is successful.</response>
+            <response code="400">If the reservation, employee, or menu item does not exist.</response>
+            <response code="401">If the Restaurant ID is not found in the token.</response>
+            <response code="404">If the order is not found.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.OrderController.DeleteOrder(System.Int32)">
+            <summary>
+            Deletes a specific order by its ID for the authenticated restaurant.
+            </summary>
+            <param name="id">The ID of the order to delete.</param>
+            <returns>A <see cref="T:Microsoft.AspNetCore.Mvc.NoContentResult"/> if the deletion is successful.</returns>
+            <response code="204">If the deletion is successful.</response>
+            <response code="401">If the Restaurant ID is not found in the token.</response>
+            <response code="404">If the order is not found.</response>
+            
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.ReservationsController.GetAllAsync(System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Int32,System.Int32)">
+            <summary>
+            Retrieves a list of reservations with optional filtering by search query, customer, restaurant, and table.
+            </summary>
+            <param name="searchQuery">Optional search term to filter reservations.</param>
+            <param name="customerId">Optional customer ID to filter reservations.</param>
+            <param name="restauranId">Optional restaurant ID to filter reservations.</param>
+            <param name="tableId">Optional table ID to filter reservations.</param>
+            <param name="pagNumber">Page number for pagination.</param>
+            <param name="pageSize">Page size for pagination.</param>
+            <returns>A list of reservations matching the search criteria.</returns>
+            <response code="200">Returns a paginated list of reservations.</response>
+            <response code="401">If the Restaurant ID is not found in the token.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.ReservationsController.GetReservationAsync(System.Int32)">
+            <summary>
+            Retrieves a specific reservation by its ID.
+            </summary>
+            <param name="id">The ID of the reservation to retrieve.</param>
+            <returns>An <see cref="T:RestaurantReservation.API.DTO_s.ReservationDto.ReservationInfoDto"/> object representing the reservation.</returns>
+            <response code="200">Returns the requested reservation if found.</response>
+            <response code="404">If the reservation is not found.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.ReservationsController.CreateReservation(RestaurantReservation.API.DTO_s.ReservationDto.ReservationCreateDto)">
+            <summary>
+            Creates a new reservation for a customer at a specified restaurant and table.
+            </summary>
+            <param name="reservation">An object containing the details of the reservation to create.</param>
+            <returns>The created <see cref="T:RestaurantReservation.API.DTO_s.ReservationDto.ReservationInfoDto"/> object.</returns>
+            <response code="201">Returns the newly created reservation.</response>
+            <response code="400">If the restaurant, customer, or table does not exist.</response>
+            
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.ReservationsController.DeleteReservation(System.Int32)">
+            <summary>
+            Deletes a specific reservation by its ID.
+            </summary>
+            <param name="id">The ID of the reservation to delete.</param>
+            <returns>A <see cref="T:Microsoft.AspNetCore.Mvc.NoContentResult"/> if the deletion is successful.</returns>
+            <response code="204">If the deletion is successful.</response>
+            <response code="404">If the reservation is not found.</response>
+            
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.ReservationsController.UpdateReservation(RestaurantReservation.API.DTO_s.ReservationDto.ReservationUpdateDto)">
+            <summary>
+            Updates an existing reservation by its ID.
+            </summary>
+            <param name="reservation">An object containing the updated details of the reservation.</param>
+            <returns>A <see cref="T:Microsoft.AspNetCore.Mvc.NoContentResult"/> if the update is successful.</returns>
+            <response code="204">If the update is successful.</response>
+            <response code="400">If the customer or table does not exist.</response>
+            <response code="404">If the reservation is not found.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.ReservationsController.GetOrdersForReservation(System.Int32)">
+            <summary>
+            Retrieves all orders associated with a specific reservation.
+            </summary>
+            <param name="reservationId">The ID of the reservation.</param>
+            <returns>A list of orders related to the reservation.</returns>
+            <response code="200">Returns a list of orders for the reservation.</response>
+            <response code="404">If the reservation is not found.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.ReservationsController.GetReservationsByCustomer(System.Int32)">
+            <summary>
+            Retrieves all reservations for a specific customer.
+            </summary>
+            <param name="customerId">The ID of the customer.</param>
+            <returns>A list of reservations for the customer.</returns>
+            <response code="200">Returns a list of reservations for the customer.</response>
+            <response code="404">If the customer is not found.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.ReservationsController.GetMenuItemsForReservation(System.Int32)">
+            <summary>
+            Retrieves all menu items associated with a specific reservation by examining its orders.
+            </summary>
+            <param name="reservationId">The ID of the reservation.</param>
+            <returns>A list of distinct menu items ordered for the reservation.</returns>
+            <response code="200">Returns a list of menu items ordered for the reservation.</response>
+            <response code="404">If the reservation is not found.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.RestaurantsController.GetAllAsync(System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Retrieves a list of restaurants with optional filtering by name and search query.
+            </summary>
+            <param name="name">Optional name to filter restaurants by.</param>
+            <param name="searchQuery">Optional search term to filter restaurants.</param>
+            <param name="pagNumber">Page number for pagination.</param>
+            <param name="pageSize">Page size for pagination.</param>
+            <returns>A list of restaurants matching the search criteria.</returns>
+            <response code="200">Returns a paginated list of restaurants.</response>
+            <response code="401">If the Restaurant ID is not found in the token.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.RestaurantsController.GetRestaurantByIdAsync(System.Int32)">
+            <summary>
+            Retrieves a specific restaurant by its ID.
+            </summary>
+            <param name="id">The ID of the restaurant to retrieve.</param>
+            <returns>An <see cref="T:RestaurantReservation.API.DTO_s.RestaurantDto.RestaurantInfoDto"/> object representing the restaurant.</returns>
+            <response code="200">Returns the requested restaurant if found.</response>
+            <response code="404">If the restaurant is not found.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.RestaurantsController.CreateRestaurant(RestaurantReservation.API.DTO_s.RestaurantDto.RestaurantInfoDto)">
+            <summary>
+            Creates a new restaurant.
+            </summary>
+            <param name="restaurant">An object containing the details of the restaurant to create.</param>
+            <returns>The created <see cref="T:RestaurantReservation.API.DTO_s.RestaurantDto.RestaurantInfoDto"/> object.</returns>
+            <response code="201">Returns the newly created restaurant.</response>
+            <response code="400">If the provided restaurant data is invalid.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.RestaurantsController.UpdateRestaurant(RestaurantReservation.API.DTO_s.RestaurantDto.RestaurantUpdateDto)">
+            <summary>
+            Updates an existing restaurant by its ID.
+            </summary>
+            <param name="restaurant">An object containing the updated details of the restaurant.</param>
+            <returns>A <see cref="T:Microsoft.AspNetCore.Mvc.NoContentResult"/> if the update is successful.</returns>
+            <response code="204">If the update is successful.</response>
+            <response code="400">If the provided restaurant data is invalid.</response>
+            <response code="404">If the restaurant is not found.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.RestaurantsController.DeleteRestaurant(System.Int32)">
+            <summary>
+            Deletes a specific restaurant by its ID.
+            </summary>
+            <param name="id">The ID of the restaurant to delete.</param>
+            <returns>A <see cref="T:Microsoft.AspNetCore.Mvc.NoContentResult"/> if the deletion is successful.</returns>
+            <response code="204">If the deletion is successful.</response>
+            <response code="404">If the restaurant is not found.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.TableController.GetAllAsync(System.String,System.Int32,System.Int32)">
+            <summary>
+            Retrieves a list of tables with optional filtering by capacity.
+            </summary>
+            <param name="capacity">Optional capacity to filter tables by.</param>
+            <param name="pagNumber">Page number for pagination.</param>
+            <param name="pageSize">Page size for pagination.</param>
+            <returns>A list of tables matching the search criteria.</returns>
+            <response code="200">Returns a paginated list of tables.</response>
+            <response code="401">If the Restaurant ID is not found in the token.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.TableController.GetTableByIdAsync(System.Int32)">
+            <summary>
+            Retrieves a specific table by its ID.
+            </summary>
+            <param name="id">The ID of the table to retrieve.</param>
+            <returns>A <see cref="T:RestaurantReservation.API.DTO_s.TableDto.TableInfoDto"/> object representing the table.</returns>
+            <response code="200">Returns the requested table if found.</response>
+            <response code="404">If the table is not found.</response>
+            <response code="401">If the Restaurant ID is not found in the token.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.TableController.CreateTable(RestaurantReservation.API.DTO_s.TableDto.TableCreateDto)">
+            <summary>
+            Creates a new table for the restaurant.
+            </summary>
+            <param name="table">An object containing the details of the table to create.</param>
+            <returns>The created <see cref="T:RestaurantReservation.API.DTO_s.TableDto.TableInfoDto"/> object.</returns>
+            <response code="201">Returns the newly created table.</response>
+            <response code="401">If the Restaurant ID is not found in the token.</response>
+            <response code="400">If the provided table data is invalid.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.TableController.UpdateTable(RestaurantReservation.API.DTO_s.TableDto.TableUpdateDto)">
+            <summary>
+            Updates an existing table by its ID.
+            </summary>
+            <param name="table">An object containing the updated details of the table.</param>
+            <returns>A <see cref="T:Microsoft.AspNetCore.Mvc.NoContentResult"/> if the update is successful.</returns>
+            <response code="204">If the update is successful.</response>
+            <response code="401">If the Restaurant ID is not found in the token.</response>
+            <response code="404">If the table is not found.</response>
+        </member>
+        <member name="M:RestaurantReservation.API.Controllers.TableController.DeleteTable(System.Int32)">
+            <summary>
+            Deletes a specific table by its ID.
+            </summary>
+            <param name="id">The ID of the table to delete.</param>
+            <returns>A <see cref="T:Microsoft.AspNetCore.Mvc.NoContentResult"/> if the deletion is successful.</returns>
+            <response code="204">If the deletion is successful.</response>
+            <response code="401">If the Restaurant ID is not found in the token.</response>
+            <response code="404">If the table is not found.</response>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.CustomerDto.BaseCustomerDto.FirstName">
+            <summary>
+            first name of the customer
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.CustomerDto.BaseCustomerDto.LastName">
+            <summary>
+            last name of the customer
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.CustomerDto.BaseCustomerDto.Email">
+            <summary>
+            the email of the customer
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.CustomerDto.BaseCustomerDto.PhoneNumber">
+            <summary>
+            the phone number of the customer
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.EmployeeDto.BaseEmployeeDto.FirstName">
+            <summary>
+            the first name of the employee
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.EmployeeDto.BaseEmployeeDto.LastName">
+            <summary>
+            the last name of the employee
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.EmployeeDto.BaseEmployeeDto.Position">
+            <summary>
+            the position of the employee
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.MenuItenDto.BaseMenuItemDto.Name">
+            <summary>
+            the name of the menu item
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.MenuItenDto.BaseMenuItemDto.Description">
+            <summary>
+            the description of the menu item
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.MenuItenDto.BaseMenuItemDto.Price">
+            <summary>
+            the price of the menu item
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.OrderDto.BaseOrderDto.ReservationId">
+            <summary>
+            the id of the reservation of the order
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.OrderDto.BaseOrderDto.EmployeeId">
+            <summary>
+            the id of the employee who took the order
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.OrderDto.BaseOrderDto.OrderDate">
+            <summary>
+            the date of the order
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.OrderDto.BaseOrderDto.TotalAmount">
+            <summary>
+            the total amount of the order
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.OrderDto.OrderItemCreateDto.ItemId">
+            <summary>
+            the id of the MenuItem
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.OrderDto.OrderItemCreateDto.Quantity">
+            <summary>
+            the quantity of the MenuItem
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.OrderDto.OrderItemUpdateDto.ItemId">
+            <summary>
+            the id of the MenuItem
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.OrderDto.OrderItemUpdateDto.Quantity">
+            <summary>
+            the quantity of the MenuItem
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.ReservationDto.BaseReservationDto.CustomerId">
+            <summary>
+            the id of the customer who made the reservation
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.ReservationDto.BaseReservationDto.TableId">
+            <summary>
+            the id of the table that the reservation is for
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.ReservationDto.BaseReservationDto.ReservationDate">
+            <summary>
+            the date and time of the reservation
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.ReservationDto.BaseReservationDto.PartySize">
+            <summary>
+            the size of the party for the reservation
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.RestaurantDto.BaseRestaurantDto.Name">
+            <summary>
+            the name of the restaurant
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.RestaurantDto.BaseRestaurantDto.Address">
+            <summary>
+            the address of the restaurant
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.RestaurantDto.BaseRestaurantDto.PhoneNumber">
+            <summary>
+            the phone number of the restaurant
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.RestaurantDto.BaseRestaurantDto.OpeningHours">
+            <summary>
+            the opening hours of the restaurant
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.TableDto.TableBaseDto.Capacity">
+            <summary>
+            the table capacity
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.TokenDto.EmployeeTokenDto.EmployeeId">
+            <summary>
+            the employee id 
+            </summary>
+        </member>
+        <member name="P:RestaurantReservation.API.DTO_s.TokenDto.EmployeeTokenDto.FirstName">
+            <summary>
+            the employee's first name
+            </summary>
+        </member>
+    </members>
+</doc>

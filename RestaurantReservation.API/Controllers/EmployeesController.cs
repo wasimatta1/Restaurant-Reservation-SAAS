@@ -27,7 +27,20 @@ namespace RestaurantReservation.API.Controllers
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
+
+        /// <summary>
+        /// Retrieves a paginated list of employees, with optional filters for name and search query.
+        /// </summary>
+        /// <param name="name">An optional parameter to filter employees by name.</param>
+        /// <param name="searchQuery">An optional search query to match employee details.</param>
+        /// <param name="pagNumber">The page number for pagination.</param>
+        /// <param name="pageSize">The number of items per page (max is restricted).</param>
+        /// <returns>A paginated list of employees matching the filters.</returns>
+        /// <response code="200">Returns a list of employees along with pagination metadata in the headers.</response>
+        /// <response code="401">If the Restaurant ID is not found in the token.</response>
         [HttpGet]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
         public async Task<ActionResult<IEnumerable<EmployeeInfoDto>>> GetAllAsync(string? name, string? searchQuery,
             int pagNumber = 1, int pageSize = 10)
         {
@@ -50,7 +63,20 @@ namespace RestaurantReservation.API.Controllers
 
             return Ok(_mapper.Map<IEnumerable<EmployeeInfoDto>>(employeeEntities));
         }
+
+
+        /// <summary>
+        /// Retrieves an employee's information by their ID.
+        /// </summary>
+        /// <param name="id">The unique identifier of the employee to retrieve.</param>
+        /// <returns>An <see cref="EmployeeInfoDto"/> with the employee's details.</returns>
+        /// <response code="200">Returns the employee's details.</response>
+        /// <response code="401">If the Restaurant ID is not found in the token.</response>
+        /// <response code="404">If the employee with the specified ID is not found.</response>
         [HttpGet("{id}", Name = "GetEmployee")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<EmployeeInfoDto>> GetEmployeeByIdAsync(int id)
         {
             var restaurantIdClaim = User.FindFirst("RestaurantId");
@@ -69,7 +95,20 @@ namespace RestaurantReservation.API.Controllers
 
             return Ok(_mapper.Map<EmployeeInfoDto>(employeeEntity));
         }
+
+
+        /// <summary>
+        /// Creates a new employee for the authenticated restaurant.
+        /// </summary>
+        /// <param name="employee">An <see cref="EmployeeCreateDto"/> object containing the employee's details.</param>
+        /// <returns>The created <see cref="EmployeeInfoDto"/> with the employee's information.</returns>
+        /// <response code="201">Returns the newly created employee.</response>
+        /// <response code="401">If the Restaurant ID is not found in the token.</response>
+        /// <response code="400">If the provided employee data is invalid.</response>
         [HttpPost]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         public async Task<ActionResult<EmployeeInfoDto>> CreateEmployee(EmployeeCreateDto employee)
         {
             var restaurantIdClaim = User.FindFirst("RestaurantId");
@@ -97,7 +136,20 @@ namespace RestaurantReservation.API.Controllers
                  employee);
         }
 
+        /// <summary>
+        /// Updates the details of an existing employee for the authenticated restaurant.
+        /// </summary>
+        /// <param name="employee">An <see cref="EmployeeUpdateDto"/> object containing the updated employee information.</param>
+        /// <returns>A response indicating the result of the update operation.</returns>
+        /// <response code="400">If the provided employee data is invalid.</response>
+        /// <response code="204">Indicates that the employee details were successfully updated.</response>
+        /// <response code="401">If the Restaurant ID is not found in the token.</response>
+        /// <response code="404">If the employee with the specified ID is not found for the given Restaurant ID.</response>
         [HttpPut]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult> UpdateEmployee(EmployeeUpdateDto employee)
         {
             var restaurantIdClaim = User.FindFirst("RestaurantId");
@@ -121,7 +173,20 @@ namespace RestaurantReservation.API.Controllers
 
             return NoContent();
         }
+
+
+        /// <summary>
+        /// Deletes an employee from the authenticated restaurant's records.
+        /// </summary>
+        /// <param name="id">The unique identifier of the employee to delete.</param>
+        /// <returns>A response indicating the result of the delete operation.</returns>
+        /// <response code="204">Indicates that the employee was successfully deleted.</response>
+        /// <response code="401">If the Restaurant ID is not found in the token.</response>
+        /// <response code="404">If the employee with the specified ID is not found.</response>
         [HttpDelete("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult> DeleteEmployee(int id)
         {
             var restaurantIdClaim = User.FindFirst("RestaurantId");
@@ -145,12 +210,32 @@ namespace RestaurantReservation.API.Controllers
             return NoContent();
 
         }
+
+        /// <summary>
+        /// Retrieves a list of all managers in the restaurant.
+        /// </summary>
+        /// <returns>A list of managers as <see cref="EmployeeInfoDto"/> objects.</returns>
+        /// <response code="200">Returns the list of managers.</response>
         [HttpGet("managers")]
+        [ProducesResponseType(200)]
         public async Task<ActionResult<IEnumerable<EmployeeInfoDto>>> GetManagersAsync()
         {
             return Ok(_mapper.Map<IEnumerable<EmployeeInfoDto>>(await _employeeRepository.ListManagers()));
         }
+
+
+        /// <summary>
+        /// Retrieves the average order amount for a specified employee in the authenticated restaurant.
+        /// </summary>
+        /// <param name="employeeId">The unique identifier of the employee for whom the average order amount is calculated.</param>
+        /// <returns>The average order amount for the specified employee.</returns>
+        /// <response code="200">Returns the average order amount.</response>
+        /// <response code="401">If the Restaurant ID is not found in the token.</response>
+        /// <response code="404">If the specified employee is not found in the restaurant.</response>
         [HttpGet("{employeeId}/average-order-amount")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<double>> GetAverageOrderAmount(int employeeId)
         {
             var restaurantIdClaim = User.FindFirst("RestaurantId");
