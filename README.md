@@ -1,152 +1,112 @@
-
-# Restaurant Reservation System
+# Restaurant Reservation System API
 
 ## Overview
-This project is a **Restaurant Reservation System** designed to manage reservations, orders, employees, and menu items for restaurants. The system includes functionality for creating and managing reservations, handling customer details, processing orders, associating menu items with orders, and managing employee roles.
 
-It leverages **Entity Framework Core** for database interaction, **SQL Server** as the backend database, and **ASP.NET Core** for the application. The system also supports **stored procedures**, **database views**, and **custom functions** for advanced querying and operations.
-
----
+The **Restaurant Reservation System API** provides a comprehensive set of RESTful API endpoints designed to manage restaurant reservations, orders, employees, menu items, and other related entities. Developed using **ASP.NET Core Web API** and **Entity Framework Core**, the system leverages a **SQL Server** database for persistence. This API enables restaurants to handle reservations, manage employees, track customer orders, and perform complex queries using database views, stored procedures, and custom functions.
 
 ## Features
-- **Reservation Management**: Create and manage reservations for customers with party size, table association, and reservation date.
-- **Order Management**: Manage orders placed for reservations, including items ordered and quantities.
-- **Employee Management**: Manage employee details, including roles (e.g., managers), and assign employees to restaurants.
-- **Menu Item Management**: Track items available on the restaurant menu.
-- **Stored Procedures**: Execute stored procedures to query and update database information.
-- **Database Views**: Use database views to simplify complex data retrieval such as customer reservations and associated restaurant details.
-- **JWT Authorization**: Secure the APIs using JSON Web Tokens (JWT) for authentication and authorization.
-- **API Documentation**: Auto-generate API documentation with Swagger.
 
----
+### Reservation Management
+- **Create, Update, Delete, and Retrieve Reservations**: Full support for managing reservations, including party size, reservation time, and associated restaurant and table details.
+- **Retrieve Reservations by Customer**: Endpoint to retrieve all reservations made by a particular customer, allowing for customer-centric data management.
+- **List Orders and Menu Items for a Reservation**: Retrieve detailed orders placed during a reservation, including the associated menu items.
+- **Get Ordered Menu Items**: Fetch distinct menu items ordered in a specific reservation, enabling precise tracking of customer preferences.
 
-## Database Schema
+### Employee Management
+- **List Managers**: Retrieve all employees holding the position of **Manager**, facilitating the management of restaurant staff.
+- **Calculate Average Order Amount for Employees**: Computes the average order value for a given employee, useful for performance analysis and employee metrics.
 
-The database schema consists of the following tables:
-- **Customers**: Stores customer details such as first name, last name, email, and phone number.
-- **Reservations**: Represents reservations made by customers, including party size, reservation date, and associated table and restaurant.
-- **Orders**: Holds order information linked to specific reservations and employees.
-- **OrderItems**: Contains the items included in an order and their quantities.
-- **Employees**: Stores employee data, including first name, last name, position, and the restaurant they work for.
-- **Restaurants**: Stores restaurant details such as name, address, phone number, and opening hours.
-- **Tables**: Represents tables available at a restaurant with seating capacity.
-- **MenuItems**: Contains information about items on a restaurant's menu.
+### Restaurant and Table Management
+- **Restaurant CRUD Operations**: Fully functional Create, Read, Update, and Delete (CRUD) operations for managing restaurant details (name, location, contact information, etc.).
+- **Table Management**: Manage tables within a restaurant, including CRUD operations for table availability, seating capacity, and associations with reservations.
 
----
+### Database Views & Stored Procedures
+- **Database Views**: Simplify complex queries, such as fetching reservations along with customer and restaurant information, using pre-defined views.
+- **Stored Procedures**: Provides support for executing stored procedures to retrieve data efficiently. Notably, includes a stored procedure for finding customers who have made reservations with a party size above a specified threshold.
 
-## Setup Instructions
+### API Endpoints
 
-### 1. Clone the Repository
-Clone the project repository to your local machine:
+#### **Reservation Endpoints**
+- **`GET /api/reservations`**: Retrieve all reservations with pagination.
+- **`GET /api/reservations/{id}`**: Get the details of a specific reservation by ID.
+- **`POST /api/reservations`**: Create a new reservation.
+- **`PUT /api/reservations`**: Update an existing reservation.
+- **`DELETE /api/reservations/{id}`**: Delete a reservation by ID.
+- **`GET /api/reservations/customer/{customerId}`**: Retrieve all reservations made by a specific customer.
+- **`GET /api/reservations/{reservationId}/orders`**: Get the orders associated with a specific reservation.
+- **`GET /api/reservations/{reservationId}/menu-items`**: Get the distinct menu items ordered during a reservation.
 
-```bash
-git clone https://github.com/yourusername/restaurant-reservation-system.git
-cd restaurant-reservation-system
-```
+#### **Employee Endpoints**
+- **`GET /api/employees/managers`**: Retrieve a list of all employees with the position of **Manager**.
+- **`GET /api/employees/{employeeId}/average-order-amount`**: Calculate the average order amount associated with a specific employee.
 
-### 2. Create the Database
-- Open **SQL Server Management Studio (SSMS)**.
-- Create a new database named `RestaurantReservationCore`.
-- Use the migration commands below to create the schema for the database.
+#### **Restaurant Endpoints**
+- **`GET /api/restaurants`**: Retrieve all restaurants.
+- **`GET /api/restaurants/{id}`**: Get details of a specific restaurant.
+- **`POST /api/restaurants`**: Create a new restaurant record.
+- **`PUT /api/restaurants`**: Update the details of an existing restaurant.
+- **`DELETE /api/restaurants/{id}`**: Delete a restaurant by its ID.
 
-### 3. Project Setup
+#### **Table Endpoints**
+- **`GET /api/tables`**: List all tables available in the restaurant, optionally filtered by criteria such as seating capacity.
+- **`GET /api/tables/{id}`**: Get details of a specific table by its ID.
+- **`POST /api/tables`**: Create a new table within the restaurant.
+- **`PUT /api/tables`**: Update the details of a table.
+- **`DELETE /api/tables/{id}`**: Delete a table by its ID.
 
-#### 3.1 Create a Console Application
-- Create a **Console Application** project named `RestaurantReservation`.
-  
-#### 3.2 Create a Library Project
-- Create a **Library Project** named `RestaurantReservation.Db` and add a reference to it from the `RestaurantReservation` project.
+## Authorization & Security
 
-#### 3.3 Create DbContext and Models
-- Add the `RestaurantReservationDbContext` class to the `RestaurantReservation.Db` project.
-- Create data models for the entities (Customers, Reservations, Employees, etc.) in the `RestaurantReservation.Db` project, including necessary relationships, keys, and constraints.
-- Write migrations to create the tables and seed the database with at least 5 records per table.
+The API employs **JWT (JSON Web Tokens)** for secure authorization. Each request to restricted endpoints requires a valid JWT token, ensuring that sensitive data such as restaurant management and employee information is only accessible to authorized users. The security layer is implemented at the controller level, ensuring that only users with appropriate roles (e.g., admins, restaurant owners) can access or modify data.
 
-### 4. Create Web API Project
+### Authorization Flow
+- Upon successful login, a JWT token is issued.
+- The token is included in the `Authorization` header for subsequent requests.
+- The API validates the token and grants access to endpoints based on the user's role.
 
-#### 4.1 Create a Web API Project
-Create a new **ASP.NET Core Web API** project named `RestaurantReservation.API`.
+## Validation and Error Handling
 
-#### 4.2 Add Dependency References
-Add a reference to the `RestaurantReservation.Db` project in the `RestaurantReservation.API` project to interact with the database.
+- **Input Validation**: Every request is validated to ensure that the data provided is accurate and complete. Invalid input is handled gracefully with detailed error messages.
+- **Error Responses**: The API responds with **standard HTTP status codes** (e.g., `400 Bad Request`, `404 Not Found`, `500 Internal Server Error`) and includes an informative message body for each error scenario.
 
-#### 4.3 Implement CRUD Operations
-- Create API controllers for each entity (e.g., Customers, Reservations, Employees).
-- Implement standard **CRUD operations** (Create, Read, Update, Delete) for each entity.
+## API Documentation
 
-#### 4.4 Implement Reservation-Specific Endpoints
-Create additional endpoints specific to reservations:
+The API utilizes **Swagger** for auto-generating API documentation. The Swagger UI is integrated directly into the application, providing an interactive interface where developers can explore all available endpoints, view parameter definitions, expected responses, and test API calls directly from the documentation interface.
 
-- `GET /api/employees/managers`: List all employees who hold the position of "Manager."
-- `GET /api/reservations/customer/{customerId}`: Retrieve all reservations by a customer ID.
-- `GET /api/reservations/{reservationId}/orders`: List orders and menu items for a reservation.
-- `GET /api/reservations/{reservationId}/menu-items`: List ordered menu items for a reservation.
-- `GET /api/employees/{employeeId}/average-order-amount`: Calculate average order amount for an employee.
+### Key Benefits of Swagger Integration:
+- Automatically generated API documentation from code annotations.
+- Interactive testing of API endpoints without the need for external tools like Postman.
+- Clear explanations of request parameters, response models, and error handling.
 
-#### 4.5 Implement Authorization
-Secure your API endpoints using **JWT authentication** or another preferred authorization mechanism.
+## Database Architecture
 
-#### 4.6 Input Validation and Error Handling
-Implement **input validation** for incoming requests and provide **user-friendly error messages** for common issues.
+The underlying database architecture supports the following entities:
 
-#### 4.7 API Documentation with Swagger
-Integrate **Swagger** to automatically generate API documentation. Ensure that the documentation includes details such as:
-- API routes
-- Query parameters
-- Expected responses
-- Error codes
+- **Customers**: Stores customer information (first name, last name, email, phone number).
+- **Reservations**: Contains reservation details such as the customer, reservation date, party size, and associated table.
+- **Orders**: Tracks orders placed by customers, linked to reservations and employees.
+- **MenuItems**: Contains details of items available on the restaurant’s menu.
+- **Employees**: Stores employee details including their role (e.g., Manager) and associated restaurant.
+- **Restaurants**: Holds information about the restaurant, such as name, address, and operational hours.
+- **Tables**: Represents tables within a restaurant, including seating capacity and availability.
 
----
+The database schema has been designed with **Entity Framework Core**, leveraging **migrations** to keep track of database changes. Migrations are included in the project to create the necessary tables and relationships, and the database is seeded with sample data to ensure the system is ready for testing and development.
 
-## Database Operations
+## Database Views & Stored Procedures
 
-### 1. Views
-- Use **Entity Framework Core** to query a database view that lists all the reservations, along with customer and restaurant details.
-- Write a query to retrieve employees along with their respective restaurant details using a view.
+- **Database Views**: The system utilizes views to simplify complex queries, such as retrieving all reservation data along with customer and restaurant information. This reduces the need for complex joins in the code and improves query performance.
+- **Stored Procedures**: Several stored procedures are used for advanced queries, such as fetching customers who have made reservations with a party size above a certain threshold.
 
-### 2. Database Functions
-- Create a database function to calculate the total revenue generated by a specific restaurant.
-- Implement the function call in the `RestaurantReservation.Db` project, making it accessible from the application.
+## Testing & Quality Assurance
 
-### 3. Stored Procedures
-- Design a **stored procedure** to find all customers who have made reservations with a party size greater than a certain value.
-- Write a method in the `RestaurantReservation.Db` project to execute the stored procedure.
+All endpoints have been manually tested using tools like **Postman** and **Swagger UI** to verify their functionality. Additionally, a comprehensive **Postman Test Suite** is included in the project to automate the testing process and ensure all endpoints work correctly.
 
-### 4. Repository Pattern
-- Create a repository class for each entity, e.g., `CustomerRepository.cs`, `ReservationRepository.cs`.
-- Move related methods (e.g., `ListManagers`, `GetReservationsByCustomer`, etc.) to the appropriate repositories, adhering to the repository pattern.
-- Ensure repositories are located in the `Repositories` folder inside the `RestaurantReservation.Db` project.
-
----
-
-## Testing and Bonus
-
-### 1. Manual Testing
-Test all API endpoints manually using **Postman** or **Swagger UI** to ensure they function correctly.
-
-### 2. Bonus: Postman Test Suite
-- Write a comprehensive **Postman test suite** that includes tests for:
-  - Successful API operations
-  - Error handling for invalid inputs and other edge cases
-- Share the Postman collection file with your team or upload it to the repository.
-
----
-
-## Git Workflow and Version Control
-
-1. **Follow GIT Best Practices**:
-   - Commit early and often.
-   - Use meaningful commit messages.
-   - Push changes to GitHub regularly.
-
-2. **Branching**:
-   - Use feature branches for new tasks.
-   - Merge changes to the main branch after review.
-
-3. **Version Control**:
-   - Host the project on GitHub and ensure that all code changes are committed and pushed regularly.
-
----
+The test suite includes tests for:
+- **Successful operations** (e.g., creating a reservation, retrieving restaurant data).
+- **Error scenarios** (e.g., invalid input, unauthorized access).
+- **Edge cases** (e.g., empty reservations, exceeding page size limits).
 
 ## Conclusion
-This project provides a comprehensive solution for restaurant reservation management, incorporating best practices such as using the **Repository pattern**, **Entity Framework Core migrations**, **API documentation** with **Swagger**, and secure **JWT authentication**. Follow the instructions step by step to ensure all components are set up correctly.
+
+The **Restaurant Reservation System API** provides a powerful, scalable solution for managing restaurant reservations, employees, orders, and menu items. The system’s use of modern web technologies such as **ASP.NET Core**, **Entity Framework Core**, and **SQL Server**, along with features like JWT authentication, error handling, and database views, ensures a robust and efficient backend for restaurant management applications.
+
+The API is designed to be easy to extend and integrate with other systems, making it ideal for developers looking to build or extend restaurant reservation solutions.
