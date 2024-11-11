@@ -91,6 +91,8 @@ The underlying database architecture supports the following entities:
 
 The database schema has been designed with **Entity Framework Core**, leveraging **migrations** to keep track of database changes. Migrations are included in the project to create the necessary tables and relationships, and the database is seeded with sample data to ensure the system is ready for testing and development.
 
+![image](https://github.com/user-attachments/assets/9b19a2fa-52f6-47dd-86f7-e6e35a4e37e9)
+
 ## Database Views & Stored Procedures
 
 - **Database Views**: The system utilizes views to simplify complex queries, such as retrieving all reservation data along with customer and restaurant information. This reduces the need for complex joins in the code and improves query performance.
