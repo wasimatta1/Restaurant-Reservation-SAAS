@@ -1,0 +1,60 @@
+CREATE VIEW ReservationsView AS
+SELECT 
+    r.ReservationId,
+    r.ReservationDate,
+    r.PartySize,
+    c.Id,
+    c.First_Name,
+	c.Phone_Number,
+    res.RestaurantId,
+    res.Name,
+	res.Address
+FROM Reservations r
+JOIN Customers c ON r.CustomerId = c.Id
+JOIN Restaurants res ON r.RestaurantId = res.RestaurantId;
+
+
+CREATE VIEW EmployeeRestaurantView AS
+SELECT 
+    e.EmployeeId,
+    e.FirstName,
+    e.LastName,
+    e.Position,
+    e.RestaurantId,
+    r.Name AS RestaurantName,
+    r.Address AS RestaurantAddress,
+    r.PhoneNumber AS RestaurantPhoneNumber,
+    r.OpeningHours AS RestaurantOpeningHours
+FROM 
+    Employees e
+INNER JOIN 
+    Restaurants r ON e.RestaurantId = r.RestaurantId;
+
+
+create function dbo.fn_CalculateTheTotalRevenueGeneratedByASpecificRestaurant(@RestaurantID INT)
+    RETURNS DECIMAL(18,2)
+As BEGIN
+	 DECLARE @Revenue DECIMAL(18,2)
+    (SELECT @Revenue = SUM(o.TotalAmount) FROM Orders o Join Employees e on o.EmployeeId = e.EmployeeId
+                                join Restaurants r on e.RestaurantId = r.RestaurantId
+                                WHERE r.RestaurantID = @RestaurantID);
+	RETURN ISNULL(@Revenue, 0)
+end;
+
+Drop Procedure if exists sp_FindCustomersWithLargePartySize;
+GO
+CREATE PROCEDURE sp_FindCustomersWithLargePartySize(@PartySize INT)
+AS
+BEGIN
+SELECT 
+    c.Id AS CustomerID, 
+    CONCAT(c.First_Name, ' ', c.Last_Name) AS CustomerName, 
+    r.PartySize
+FROM 
+    Customers c
+JOIN 
+    Reservations r ON c.Id = r.CustomerId
+WHERE 
+    r.PartySize > @PartySize;
+END;
+
